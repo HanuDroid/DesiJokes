@@ -1,0 +1,27 @@
+<html>
+<head>
+<script type="text/javascript">
+	function initForm(){
+		var enable_pwd = File.getParameterValue("pwd_enabled");
+		if(enable_pwd == "true"){
+			document.getElementById('enable_password').checked = true;
+			document.getElementById('password').value = File.getParameterValue("password");
+		}
+	}
+	function buttonClick(){
+		var enable_pwd = document.getElementById('enable_password').checked;
+		var pwd = document.getElementById('password').value;
+		var bundle = {"child_lock":enable_pwd,"password":pwd};
+		File.saveSettings(JSON.stringify(bundle));
+	}
+</script>
+</head>
+
+<body onload="initForm();">
+<input id="enable_password" type="checkbox" name="enable_password" value="true">Enable Child lock<br>
+Password: <input id="password" type="password" name="pwd"><br>
+The application cannot be launched without entering password. If you forget the password, un-install and install again.<br>
+<input id="save" type="button" value="Save" onclick="buttonClick();" />
+
+</body>
+</html>

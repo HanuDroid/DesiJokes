@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	
+    <item android:icon="@drawable/settings"
+		  android:id="@+id/Settings"
+		  android:title="Settings">
+	</item>
+	
+	<item android:icon="@drawable/rating"
+		  android:id="@+id/Rate"
+		  android:title="Rate this joke">
+	</item>
+	
+	<item android:icon="@drawable/share"
+		  android:id="@+id/Share"
+		  android:title="Share">
+	</item>
+	
+	<item android:icon="@drawable/help"
+		  android:id="@+id/Help"
+		  android:title="Help">
+	</item>
+	
+	<item android:icon="@drawable/about"
+		  android:id="@+id/About"
+		  android:title="About">
+	</item>
+			
+</menu>

@@ -1,0 +1,17 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name">Desi Jokes</string>
+    <string name="title_activity_main">Desi Jokes</string>
+    <string name="BlogURL">http://hanu-droid.varunverma.org/Applications/DesiJokes</string>
+    <string name="GoogleAnalyticsPropertyId" tools:ignore="TypographyDashes">UA-34707924-3</string>
+	
+    <string name="title_color">blue</string>
+    <string name="title_font">arial,helvetica,sans-serif</string>
+    <string name="pub_date_color">black</string>
+    <string name="pub_date_font">verdana,geneva,sans-serif</string>
+    <string name="content_color">black</string>
+    <string name="content_font">arial,helvetica,sans-serif</string>
+    <string name="taxonomy_color">black</string>
+    <string name="taxonomy_font">arial,helvetica,sans-serif</string>
+    
+</resources>
