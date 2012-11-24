@@ -5,7 +5,6 @@ package org.varunverma.desijokes;
 
 import org.varunverma.hanu.Application.Application;
 import org.varunverma.hanu.Application.Post;
-import org.varunverma.hanu.Application.Tracker;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,6 +12,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
+
+import com.google.analytics.tracking.android.EasyTracker;
 
 /**
  * @author Varun
@@ -38,7 +39,7 @@ public class PostRating extends Activity implements OnRatingBarChangeListener {
         	finish();
         }
         
-        Tracker.getInstance().trackPageView("/Rating/" + post.getTitle());
+        EasyTracker.getInstance().activityStart(this);
         
         setTitle("Rate this post:");
 		
@@ -47,6 +48,13 @@ public class PostRating extends Activity implements OnRatingBarChangeListener {
         ratingBar.setRating(post.getMyRating());
         ratingBar.setOnRatingBarChangeListener(this);
         
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		// The rest of your onStop() code.
+		EasyTracker.getInstance().activityStop(this);
 	}
 	
 	@Override

@@ -34,7 +34,7 @@ public class DisplayFile extends Activity {
     public void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);       
-        setContentView(R.layout.main);
+        setContentView(R.layout.post_detail);
         
         my_web_view = (WebView) findViewById(R.id.webview);
         WebSettings webSettings = my_web_view.getSettings();
@@ -92,6 +92,7 @@ public class DisplayFile extends Activity {
 		// Show from a RAW Source
         getHTMLFromFile(fileName);
         my_web_view.setBackgroundColor(0);
+        my_web_view.setBackgroundResource(R.drawable.background);
         my_web_view.loadData(html_text, "text/html", "utf-8");
 	}
 
