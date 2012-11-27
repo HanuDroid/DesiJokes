@@ -1,8 +1,10 @@
 package org.varunverma.desijokes;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import org.varunverma.hanu.Application.Application;
 import org.varunverma.hanu.Application.HanuFragmentInterface;
@@ -50,7 +52,19 @@ public class PostListFragment extends ListFragment implements HanuFragmentInterf
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        
+    	super.onCreate(savedInstanceState);
+        
+        Application app = Application.getApplicationInstance();
+        
+        if(getArguments() != null){
+			if (getArguments().containsKey("PostId")) {
+				selection = getArguments().getInt("PostId");
+	        	if(selection > app.getPostList().size()){
+	        		selection = app.getPostList().size();
+	        	}
+	        }
+		}
     }
     
     @Override
@@ -66,7 +80,8 @@ public class PostListFragment extends ListFragment implements HanuFragmentInterf
     	postList.addAll(Application.getApplicationInstance().getPostList());
     	adapter = new myAdapter(c,R.layout.post_list_row,R.id.post_title,postList);
     	listView.setAdapter(adapter);
-    	
+    	listView.setSelection(selection);
+    	listView.performItemClick(adapter.getView(selection, null, null), selection, 0);
     }
 	
     @Override
@@ -138,7 +153,13 @@ class myAdapter extends ArrayAdapter<Post>{
 		
 		TextView date = (TextView) rowView.findViewById(R.id.post_date);
 		if(date != null){
-			date.setText(new SimpleDateFormat().format(postList.get(position).getPublishDate()));
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(postList.get(position).getPublishDate());
+			String dateString = "Posted on: " + 
+								String.valueOf(calendar.get(Calendar.DATE)) + " " +
+								calendar.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()) + " " + 
+								String.valueOf(calendar.get(Calendar.YEAR));
+			date.setText(dateString);
 		}
 		
 		return rowView;

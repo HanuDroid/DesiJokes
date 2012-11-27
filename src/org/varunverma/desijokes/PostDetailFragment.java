@@ -22,6 +22,7 @@ import android.webkit.WebView;
 
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
+import com.google.analytics.tracking.android.EasyTracker;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class PostDetailFragment extends Fragment implements HanuFragmentInterface, HanuGestureListener{
@@ -59,7 +60,10 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
 		
 		if(getArguments() != null){
 			if (getArguments().containsKey("PostId")) {
-	        	int index = getArguments().getInt("PostId");
+				int index = getArguments().getInt("PostId");
+	        	if(index > app.getPostList().size()){
+	        		index = app.getPostList().size();
+	        	}
 	            post = app.getPostList().get(index);
 	        }
 		}
@@ -138,7 +142,7 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
 		if(post != null){
 			html = post.getHTMLCode();
 		}
-		
+		EasyTracker.getTracker().trackView("/Post/" + post.getTitle());
 		wv.loadDataWithBaseURL("fake://not/needed", html, "text/html", "UTF-8", "");
 		
 	}

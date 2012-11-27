@@ -32,6 +32,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 	private boolean firstUse;
 	private boolean appClosing;
 	private HanuFragmentInterface fragmentUI;
+	private int postId;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,10 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
         boolean pwdEntered = false;
         if(savedInstanceState != null){
         	pwdEntered = savedInstanceState.getBoolean("PwdEntered");
+        	postId = savedInstanceState.getInt("PostId");
+        }
+        else{
+        	postId = 0;
         }
         
         if (findViewById(R.id.post_list) != null) {
@@ -121,12 +126,15 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 		if (dualPane) {
 			// Create Post List Fragment
 			fragment = new PostListFragment();
+			Bundle arguments = new Bundle();
+			arguments.putInt("PostId", postId);
+			fragment.setArguments(arguments);
 			fm.beginTransaction().replace(R.id.post_list, fragment).commitAllowingStateLoss();
 		} else {
 			// Create Post Detail Fragment
 			fragment = new PostDetailFragment();
 			Bundle arguments = new Bundle();
-			arguments.putInt("PostId", 0);
+			arguments.putInt("PostId", postId);
 			fragment.setArguments(arguments);
 			fm.beginTransaction().replace(R.id.post_detail, fragment).commitAllowingStateLoss();
 		}
@@ -209,6 +217,9 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 	    outState.putBoolean("PwdEntered", true);
+	    if(fragmentUI != null){
+			outState.putInt("PostId", fragmentUI.getSelectedItem());
+		}
 	}
 	
 	@Override
