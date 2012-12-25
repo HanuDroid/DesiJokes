@@ -269,7 +269,13 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 			info.putExtra("Title", "About: ");
 			Main.this.startActivity(info);
     		break;
-    	
+
+    	case R.id.Upload:
+    		EasyTracker.getTracker().trackView("/Upload");
+    		Intent upload = new Intent(Main.this, CreateNewPost.class);
+			Main.this.startActivity(upload);
+    		break;
+    		
     	}
     	
     	return true;

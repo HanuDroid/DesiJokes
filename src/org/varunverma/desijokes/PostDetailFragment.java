@@ -145,8 +145,8 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
 		String html = "";
 		if(post != null){
 			html = post.getHTMLCode();
+			EasyTracker.getTracker().trackView("/Post/" + post.getTitle());
 		}
-		EasyTracker.getTracker().trackView("/Post/" + post.getTitle());
 		wv.loadDataWithBaseURL("fake://not/needed", html, "text/html", "UTF-8", "");
 		
 	}

@@ -2,6 +2,12 @@
 
     <string name="app_name">Desi Jokes</string>
     <string name="title_activity_main">Desi Jokes</string>
+    <string name="title">Title goes here</string>
+    <string name="content">Write Content here</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">Cancel</string>
+    <string name="nick_name">Name</string>
+    
     <string name="BlogURL">http://hanu-droid.varunverma.org/Applications/DesiJokes</string>
     <string name="GoogleAnalyticsPropertyId" tools:ignore="TypographyDashes">UA-34707924-3</string>
 	

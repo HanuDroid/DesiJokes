@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.varunverma.desijokes"
     android:installLocation="preferExternal"
-    android:versionCode="7"
-    android:versionName="1.6.1" >
+    android:versionCode="8"
+    android:versionName="1.7" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -54,6 +54,19 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.RATE" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".CreateNewPost"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="true"
+            android:permission="android.permission.INTERNET"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.CREATE_POST" />
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+        		<data android:mimeType="text/*" />
             </intent-filter>
         </activity>
 

@@ -13,6 +13,12 @@
 		  android:title="Share">
 	</item>
 	
+	<item android:icon="@drawable/upload"
+		  android:id="@+id/Upload"
+		  android:showAsAction="ifRoom"
+		  android:title="Upload">
+	</item>
+	
 	<item android:icon="@drawable/help"
 		  android:id="@+id/Help"
 		  android:showAsAction="ifRoom"
