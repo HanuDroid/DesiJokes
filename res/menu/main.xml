@@ -7,6 +7,14 @@
 		  android:title="Rate this joke">
 	</item>
 	
+    <item
+        android:id="@+id/Search"
+        android:title="Search"
+        android:icon="@drawable/search"
+        android:showAsAction="ifRoom|collapseActionView"
+        android:actionViewClass="android.widget.SearchView" >
+    </item>
+	
 	<item android:icon="@drawable/share"
 		  android:id="@+id/Share"
 		  android:showAsAction="ifRoom"
@@ -19,16 +27,22 @@
 		  android:title="Upload">
 	</item>
 	
-	<item android:icon="@drawable/help"
-		  android:id="@+id/Help"
+	<item android:icon="@drawable/cancel"
+		  android:id="@+id/Delete"
 		  android:showAsAction="ifRoom"
-		  android:title="Help">
+		  android:title="Delete">
 	</item>
-	
+		
 	<item android:icon="@drawable/settings"
 		  android:id="@+id/Settings"
 		  android:showAsAction="ifRoom"
 		  android:title="Settings">
+	</item>
+	
+	<item android:icon="@drawable/help"
+		  android:id="@+id/Help"
+		  android:showAsAction="ifRoom"
+		  android:title="Help">
 	</item>
 	
 	<item android:icon="@drawable/about"

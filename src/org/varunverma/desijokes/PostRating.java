@@ -39,6 +39,10 @@ public class PostRating extends Activity implements OnRatingBarChangeListener {
         	finish();
         }
         
+        if(post == null){
+        	finish();
+        }
+        
         EasyTracker.getInstance().activityStart(this);
         
         setTitle("Rate this post:");
@@ -69,14 +73,11 @@ public class PostRating extends Activity implements OnRatingBarChangeListener {
 		// Rating was changed
 		if(fromUser){
 			
-			
 			post.addRating(rating);
 			
 		}
-		
 		// Close activity after the rating is finished
-		finish();
-		
+		finish();		
 	}
 	
 }

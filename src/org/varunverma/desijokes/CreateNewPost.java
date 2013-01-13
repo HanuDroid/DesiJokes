@@ -7,6 +7,8 @@ import org.varunverma.CommandExecuter.ResultObject;
 import org.varunverma.hanu.Application.Application;
 import org.varunverma.hanu.Application.CreateNewPostCommand;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -29,7 +31,10 @@ public class CreateNewPost extends Activity implements OnClickListener, Invoker{
 		setContentView(R.layout.create_post);
 		setTitle("Upload new Joke");
 		
-		title = (EditText) findViewById(R.id.title);
+		// Tracking.
+        EasyTracker.getInstance().activityStart(this);
+        
+        title = (EditText) findViewById(R.id.title);
 		content = (EditText) findViewById(R.id.content);
 		
 		// Initialize Application
@@ -113,6 +118,13 @@ public class CreateNewPost extends Activity implements OnClickListener, Invoker{
 	public void ProgressUpdate(ProgressInfo progress) {
 		// Nothing to do
 		
+	}
+	
+	@Override
+	public void onStop() {
+		super.onStop();
+		// The rest of your onStop() code.
+		EasyTracker.getInstance().activityStop(this);
 	}
 	
 }

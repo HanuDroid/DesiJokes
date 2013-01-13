@@ -8,57 +8,85 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.NotificationCompat;
 
 public class GCMIntentService extends HanuGCMIntentService {
-	
-	@Override
-	protected void onError(Context context, String errorId) {
-		super.onError(context, errorId);
-
-	}
 
 	@Override
 	protected void onMessage(Context context, Intent intent) {
-		
-		ResultObject result = processMessage(context,intent);
-		
-		if(result.isCommandExecutionSuccess() && result.getResultCode() == 200){
-			createNotification();
+
+		String message = intent.getExtras().getString("message");
+		if (message.contentEquals("InfoMessage")) {
+			// Show Info Message to the User
+			showInfoMessage(intent);
+		} else {
+
+			ResultObject result = processMessage(context, intent);
+
+			if (result.isCommandExecutionSuccess() && result.getResultCode() == 200) {
+				createNotification();
+			}
 		}
 	}
 
-	@Override
-	protected void onRegistered(Context context, String regId) {
-		super.onRegistered(context, regId);
-		
-	}
+	private void showInfoMessage(Intent intent) {
+		// Show Info Message
+		String subject = intent.getExtras().getString("subject");
+		String content = intent.getExtras().getString("content");
 
-	@Override
-	protected void onUnregistered(Context context, String regId) {
-		super.onUnregistered(context, regId);
+		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+		// Create Intent and Set Extras
+		Intent notificationIntent = new Intent(this, DisplayFile.class);
+
+		notificationIntent.putExtra("Title", "Info:");
+		notificationIntent.putExtra("Subject", subject);
+		notificationIntent.putExtra("Content", content);
+
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+
+		Notification notification = new NotificationCompat.Builder(this)
+				.setContentTitle(subject).setContentText(content)
+				.setContentIntent(pendingIntent).build();
+
+		notification.icon = R.drawable.ic_launcher;
+		notification.tickerText = subject;
+		notification.when = System.currentTimeMillis();
+
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		notification.defaults |= Notification.DEFAULT_SOUND;
+		notification.defaults |= Notification.DEFAULT_VIBRATE;
+
+		nm.notify(2, notification);
 
 	}
 
 	private void createNotification() {
 		// Create Notification
-			
+
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			
-		Notification notification = new Notification();
+
+		String message = "New jokes are available";
+		
+		Intent notificationIntent = new Intent(this, Main.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+		
+		Notification notification = new NotificationCompat.Builder(this)
+										.setContentTitle(message)
+										.setContentText(message)
+										.setContentIntent(pendingIntent)
+										.build();
+		
 		notification.icon = R.drawable.ic_launcher;
-		notification.tickerText = "New jokes are available";
+		notification.tickerText = message;
 		notification.when = System.currentTimeMillis();
 		
 		notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		notification.defaults |= Notification.DEFAULT_SOUND;
 		notification.defaults |= Notification.DEFAULT_VIBRATE;
-			
-		Intent notificationIntent = new Intent(this, Main.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-		notification.setLatestEventInfo(this, "New jokes available", "New jokes are available", contentIntent);
-				
+
 		nm.notify(1, notification);
-				
+
 	}
-	
+
 }

@@ -47,6 +47,7 @@ public class PostListFragment extends ListFragment implements HanuFragmentInterf
     	View view = inflater.inflate(R.layout.post_list, container, false);
     	listView = (ListView) view.findViewById(android.R.id.list);
     	listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+    	listView.setBackgroundColor(getResources().getColor(R.color.light_grey));
     	return view;
     }
     
@@ -81,7 +82,15 @@ public class PostListFragment extends ListFragment implements HanuFragmentInterf
     	adapter = new myAdapter(c,R.layout.post_list_row,R.id.post_title,postList);
     	listView.setAdapter(adapter);
     	listView.setSelection(selection);
-    	listView.performItemClick(adapter.getView(selection, null, null), selection, 0);
+    	
+    	if(getArguments() != null){
+    		if (getArguments().containsKey("ShowFirstItem")) {
+    			boolean showFirstItem = getArguments().getBoolean("ShowFirstItem");
+    			if(showFirstItem){
+    				listView.performItemClick(adapter.getView(selection, null, null), selection, 0);
+    			}
+	        }
+    	}
     }
 	
     @Override
