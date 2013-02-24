@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -47,9 +48,14 @@ public class PostDetailActivity extends Activity {
 		Intent intent = getIntent();
 		int postId = intent.getIntExtra("PostId", 0);
 		
-		Post post = Application.getApplicationInstance().getPostList().get(postId);
-		EasyTracker.getTracker().trackView("/PostTitle/" + post.getTitle());
-		wv.loadDataWithBaseURL("fake://not/needed", post.getHTMLCode(), "text/html", "UTF-8", "");
+		try{
+			Post post = Application.getApplicationInstance().getPostList().get(postId);
+			EasyTracker.getTracker().trackView("/PostTitle/" + post.getTitle());
+			wv.loadDataWithBaseURL("fake://not/needed", post.getHTMLCode(), "text/html", "UTF-8", "");
+		}catch(Exception e){
+			Log.e(Application.TAG, e.getMessage(), e);
+			finish();
+		}		
 		
 	}
 	

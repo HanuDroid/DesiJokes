@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="ButtonOrder">
+        <ignore path="res\layout\create_post.xml" />
+    </issue>
+    <issue id="HardcodedText" severity="ignore" />
+    <issue id="IconDipSize">
+        <ignore path="res\drawable-ldpi\background.png" />
+    </issue>
+    <issue id="MergeRootFrame">
+        <ignore path="res\layout\main.xml" />
+    </issue>
+    <issue id="SelectableText" severity="ignore" />
+    <issue id="UnusedResources">
+        <ignore path="res\values\strings.xml" />
+    </issue>
+</lint>

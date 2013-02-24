@@ -69,7 +69,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
         
         // Set the context of the application
         app.setContext(getApplicationContext());
-
+        app.setEULAResult(true);
         // Accept my Terms
         if(!app.isEULAAccepted()){
         	// Show EULA.
@@ -276,13 +276,18 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     		break;
     		
     	case R.id.Share:
-    		Post post = app.getPostList().get(fragmentUI.getSelectedItem());
-    		EasyTracker.getTracker().trackView("/Share/" + post.getTitle());
-    		Intent send = new Intent(android.content.Intent.ACTION_SEND);
-    		send.setType("text/plain");
-    		send.putExtra(android.content.Intent.EXTRA_SUBJECT, post.getTitle());
-    		send.putExtra(android.content.Intent.EXTRA_TEXT, post.getContent(true));
-    		startActivity(Intent.createChooser(send, "Share with..."));
+    		try{
+    			Post post = app.getPostList().get(fragmentUI.getSelectedItem());
+        		EasyTracker.getTracker().trackView("/Share/" + post.getTitle());
+        		Intent send = new Intent(android.content.Intent.ACTION_SEND);
+        		send.setType("text/plain");
+        		send.putExtra(android.content.Intent.EXTRA_SUBJECT, post.getTitle());
+        		send.putExtra(android.content.Intent.EXTRA_TEXT, post.getContent(true));
+        		startActivity(Intent.createChooser(send, "Share with..."));
+    		}catch(Exception e){
+    			Log.e(Application.TAG, e.getMessage(), e);
+    			finish();
+    		}
     		break;
     		
     	case R.id.About:
@@ -313,8 +318,13 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 				.setPositiveButton("Yes",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
-								app.deletePost(app.getPostList().get(fragmentUI.getSelectedItem()).getId());
-					    		fragmentUI.reloadUI();
+								try{
+									app.deletePost(app.getPostList().get(fragmentUI.getSelectedItem()).getId());
+						    		fragmentUI.reloadUI();
+					    		}catch(Exception e){
+					    			Log.e(Application.TAG, e.getMessage(), e);
+					    			finish();
+					    		}
 							}
 						})
 				.setNegativeButton("No", new DialogInterface.OnClickListener() {

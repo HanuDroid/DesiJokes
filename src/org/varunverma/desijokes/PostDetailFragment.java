@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -160,8 +161,13 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
 		} else {
 			position++;
 		}
-		post = app.getPostList().get(position);
-		showPost();
+		
+		try{
+			post = app.getPostList().get(position);
+			showPost();
+		}catch(Exception e){
+			Log.e(Application.TAG, e.getMessage(), e);
+		}
 		
 	}
 
@@ -174,8 +180,13 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
 		else{
 			position--;
 		}
-		post = app.getPostList().get(position);
-		showPost();
+		
+		try{
+			post = app.getPostList().get(position);
+			showPost();
+		}catch(Exception e){
+			Log.e(Application.TAG, e.getMessage(), e);
+		}
 	}
 
 	@Override

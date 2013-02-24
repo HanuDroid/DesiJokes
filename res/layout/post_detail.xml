@@ -13,7 +13,7 @@
         ads:adSize="BANNER" >
 	</com.google.ads.AdView>
 
-	<WebView  xmlns:android="http://schemas.android.com/apk/res/android"
+	<WebView
     	android:id="@+id/webview"
     	android:layout_above="@id/adView"
     	android:layout_width="fill_parent"

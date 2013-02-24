@@ -24,7 +24,7 @@ public class GCMIntentService extends HanuGCMIntentService {
 			ResultObject result = processMessage(context, intent);
 
 			if (result.isCommandExecutionSuccess() && result.getResultCode() == 200) {
-				createNotification();
+				createNotification(intent);
 			}
 		}
 	}
@@ -61,12 +61,15 @@ public class GCMIntentService extends HanuGCMIntentService {
 
 	}
 
-	private void createNotification() {
+	private void createNotification(Intent intent) {
 		// Create Notification
 
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-		String message = "New jokes are available";
+		String message = intent.getExtras().getString("notif_message");
+		if(message == null || message.contentEquals("")){
+			message = "New jokes are available";
+		}
 		
 		Intent notificationIntent = new Intent(this, Main.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
