@@ -46,8 +46,10 @@ public class GCMIntentService extends HanuGCMIntentService {
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		Notification notification = new NotificationCompat.Builder(this)
-				.setContentTitle(subject).setContentText(content)
-				.setContentIntent(pendingIntent).build();
+										.setContentTitle(subject)
+										.setContentText(content)
+										.setSmallIcon(R.drawable.ic_launcher)
+										.setContentIntent(pendingIntent).build();
 
 		notification.icon = R.drawable.ic_launcher;
 		notification.tickerText = subject;
@@ -77,6 +79,7 @@ public class GCMIntentService extends HanuGCMIntentService {
 		Notification notification = new NotificationCompat.Builder(this)
 										.setContentTitle(message)
 										.setContentText(message)
+										.setSmallIcon(R.drawable.ic_launcher)
 										.setContentIntent(pendingIntent)
 										.build();
 		
