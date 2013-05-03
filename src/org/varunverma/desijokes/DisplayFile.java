@@ -41,16 +41,6 @@ public class DisplayFile extends Activity {
 		webSettings.setJavaScriptEnabled(true);
 		my_web_view.addJavascriptInterface(new FileJavaScriptInterface(), "File");
         
-		/*
-		AdRequest adRequest = new AdRequest();
-        adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
-        adRequest.addTestDevice("E16F3DE5DF824FE222EDDA27A63E2F8A");
-                
-        adView = (AdView) findViewById(R.id.adView);
-        
-        // Start loading the ad in the background.
-        adView.loadAd(adRequest);
-		*/
         String title = this.getIntent().getStringExtra("Title");
         if(title == null || title.contentEquals("")){
         	title = getResources().getString(R.string.app_name);

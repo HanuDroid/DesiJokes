@@ -33,6 +33,11 @@ public class GCMIntentService extends HanuGCMIntentService {
 		// Show Info Message
 		String subject = intent.getExtras().getString("subject");
 		String content = intent.getExtras().getString("content");
+		String mid = intent.getExtras().getString("message_id");
+		if(mid == null || mid.contentEquals("")){
+			mid = "0";
+		}
+		int id = Integer.valueOf(mid);
 
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -42,6 +47,7 @@ public class GCMIntentService extends HanuGCMIntentService {
 		notificationIntent.putExtra("Title", "Info:");
 		notificationIntent.putExtra("Subject", subject);
 		notificationIntent.putExtra("Content", content);
+		notificationIntent.addCategory(subject);
 
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
@@ -59,7 +65,7 @@ public class GCMIntentService extends HanuGCMIntentService {
 		notification.defaults |= Notification.DEFAULT_SOUND;
 		notification.defaults |= Notification.DEFAULT_VIBRATE;
 
-		nm.notify(2, notification);
+		nm.notify(id, notification);
 
 	}
 
