@@ -69,7 +69,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
         
         // Set the context of the application
         app.setContext(getApplicationContext());
-        app.setEULAResult(true);
+        //app.setEULAResult(true);
         // Accept my Terms
         if(!app.isEULAAccepted()){
         	// Show EULA.

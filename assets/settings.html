@@ -7,20 +7,42 @@
 			document.getElementById('enable_password').checked = true;
 			document.getElementById('password').value = File.getParameterValue("password");
 		}
+		
+		var en_lang = File.getParameterValue("EN_Lang");
+		if(enable_pwd == "true"){
+			document.getElementById('en-lang').checked = true;
+			document.getElementById('all-lang').checked = false;
+		}
+		else{
+			document.getElementById('en-lang').checked = false;
+			document.getElementById('all-lang').checked = true;
+		}
+		
 	}
 	function buttonClick(){
 		var enable_pwd = document.getElementById('enable_password').checked;
 		var pwd = document.getElementById('password').value;
-		var bundle = {"child_lock":enable_pwd,"password":pwd};
+		var en_lang = document.getElementById('en-lang').checked;
+		
+		var bundle = {"child_lock":enable_pwd,"password":pwd,"EN_Lang":en_lang};
+		
 		File.saveSettings(JSON.stringify(bundle));
 	}
 </script>
 </head>
 
 <body onload="initForm();">
+
+<h3>Parental Control:</h3>
 <input id="enable_password" type="checkbox" name="enable_password" value="true">Enable Child lock<br>
 Password: <input id="password" type="password" name="pwd"><br>
 The application cannot be launched without entering password. If you forget the password, un-install and install again.<br>
+
+<h3>Language Preference:</h3>
+<input type="radio" name="lang" id="en-lang">English Jokes only<br>
+<input type="radio" name="lang" id="all-lang" checked="checked">All Jokes
+
+<br><br>
 <input id="save" type="button" value="Save" onclick="buttonClick();" />
 
 </body>
