@@ -1,3 +1,4 @@
+/.settings/org.eclipse.jdt.core.prefs
 # Ignore the Generated Files
 # We must ignore the complete directory Gen, Bin and .APK files
 gen/

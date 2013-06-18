@@ -69,7 +69,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
         
         // Set the context of the application
         app.setContext(getApplicationContext());
-        //app.setEULAResult(true);
+        app.setEULAResult(true);
         // Accept my Terms
         if(!app.isEULAAccepted()){
         	// Show EULA.
@@ -83,9 +83,8 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
         	String pwdEnabled = app.getOptions().get("pwd_enabled");
         	if( pwdEnabled != null && Boolean.parseBoolean(pwdEnabled) && !pwdEntered){
         		// Password is enabled !
-        		Intent password = new Intent(Main.this, DisplayFile.class);
-        		password.putExtra("File", "password.html");
-        		password.putExtra("Title", "Enter your secret password: ");
+        		Intent password = new Intent(Main.this, Settings.class);
+        		password.putExtra("Code", "Password");
     			Main.this.startActivityForResult(password, 999);
         	}
         	else{
@@ -97,6 +96,16 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     private void startMainActivity() {
 		// Register application.
         app.registerAppForGCM();
+        
+		// For the first use, ask language preference.
+		if (!app.getOptions().containsKey("EN_Lang")) {
+
+			Intent lang = new Intent(Main.this, Settings.class);
+			lang.putExtra("Code", "LangSettings");
+			Main.this.startActivityForResult(lang, 998);
+			return;
+
+		}
                 
         // Initialize app...
         if(app.isThisFirstUse()){
@@ -265,9 +274,8 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     		
     	case R.id.Settings:
     		EasyTracker.getTracker().trackView("/Settings");
-    		Intent settings = new Intent(Main.this, DisplayFile.class);
-    		settings.putExtra("File", "settings.html");
-    		settings.putExtra("Title", "Settings: ");
+    		Intent settings = new Intent(Main.this, Settings.class);
+    		settings.putExtra("Code", "Settings");
 			Main.this.startActivity(settings);
     		break;
     		
@@ -348,6 +356,15 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     		else{
     			// Start Main Activity
     			startMainActivity();
+    		}
+    		break;
+    		
+    	case 998:
+    		if(resultCode == RESULT_OK){
+    			startMainActivity();
+    		}
+    		else{
+    			finish();
     		}
     		break;
     		

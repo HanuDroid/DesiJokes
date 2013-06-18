@@ -80,7 +80,6 @@ public class GCMIntentService extends HanuGCMIntentService {
 		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 		String title;
-		String text = postTitleList.get(0);
 
 		int postsDownloaded = result.getData().getInt("PostsDownloaded");
 		if (postsDownloaded == 0) {
@@ -94,7 +93,6 @@ public class GCMIntentService extends HanuGCMIntentService {
 
 		NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(this)
 														.setContentTitle(title)
-														.setContentText(text)
 														.setContentInfo(String.valueOf(postsDownloaded))
 														.setSmallIcon(R.drawable.ic_launcher)
 														.setContentIntent(pendingIntent);

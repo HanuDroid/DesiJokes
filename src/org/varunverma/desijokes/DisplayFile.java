@@ -31,7 +31,6 @@ public class DisplayFile extends Activity {
 	private AdView adView;
 	Application app = Application.getApplicationInstance();
 	
-	@SuppressLint("JavascriptInterface")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 		
@@ -142,45 +141,23 @@ public class DisplayFile extends Activity {
 		
 		@JavascriptInterface
 		public void saveSettings(String bundle){
-			
 			try {
-				
-				boolean close = true;
 				JSONObject o = new JSONObject(bundle);
-				
 				if(o.getString("child_lock").contentEquals("true")){
 					if(o.getString("password").contentEquals("")){
 						Toast.makeText(getApplicationContext(), "Enter a valid password !", Toast.LENGTH_LONG).show();
-						close = false;
 					}
 					else{
 						app.addParameter("pwd_enabled", o.getString("child_lock"));
 						app.addParameter("password", o.getString("password"));
+						finish();
 					}
 				}
 				else{
 					app.addParameter("pwd_enabled", "false");
 					app.addParameter("password", "");
-				}
-				
-				// Language Preference
-				if(o.getString("EN_Lang").contentEquals("true")){
-					// Only English Language
-					app.addParameter("EN_Lang", o.getString("EN_Lang"));
-
-					// Add to Sync Parameters
-					app.addSyncCategory("English");
-				}
-				else{
-					// Remove language parameter and sync parameter
-					app.removeParameter("EN_Lang");
-					app.removeSyncCategory("English");
-				}
-				
-				if(close){
 					finish();
 				}
-				
 			} catch (JSONException e) {
 				Log.e(Application.TAG, e.getMessage(), e);
 			}
@@ -188,11 +165,7 @@ public class DisplayFile extends Activity {
 		
 		@JavascriptInterface
 		public String getParameterValue(String paramName){
-			String val = Application.getApplicationInstance().getOptions().get(paramName);
-			if(val == null){
-				val = "";
-			}
-			return val;
+			return Application.getApplicationInstance().getOptions().get(paramName);
 		}
 		
 		@JavascriptInterface
