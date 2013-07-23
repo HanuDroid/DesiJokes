@@ -50,7 +50,7 @@ public class PostDetailActivity extends Activity {
 		
 		try{
 			Post post = Application.getApplicationInstance().getPostList().get(postId);
-			EasyTracker.getTracker().trackView("/PostTitle/" + post.getTitle());
+			EasyTracker.getTracker().sendView("/PostTitle/" + post.getTitle());
 			wv.loadDataWithBaseURL("fake://not/needed", post.getHTMLCode(), "text/html", "UTF-8", "");
 		}catch(Exception e){
 			Log.e(Application.TAG, e.getMessage(), e);

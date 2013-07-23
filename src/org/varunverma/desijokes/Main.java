@@ -69,7 +69,6 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
         
         // Set the context of the application
         app.setContext(getApplicationContext());
-        app.setEULAResult(true);
         // Accept my Terms
         if(!app.isEULAAccepted()){
         	// Show EULA.
@@ -192,7 +191,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 
 	private void showHelp() {
 		// Show Help
-		EasyTracker.getTracker().trackView("/Help");
+		EasyTracker.getTracker().sendView("/Help");
 		Intent help = new Intent(Main.this, DisplayFile.class);
 		help.putExtra("File", "help.html");
 		help.putExtra("Title", "Help: ");
@@ -273,7 +272,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
             return true;
     		
     	case R.id.Settings:
-    		EasyTracker.getTracker().trackView("/Settings");
+    		EasyTracker.getTracker().sendView("/Settings");
     		Intent settings = new Intent(Main.this, Settings.class);
     		settings.putExtra("Code", "Settings");
 			Main.this.startActivity(settings);
@@ -286,7 +285,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     	case R.id.Share:
     		try{
     			Post post = app.getPostList().get(fragmentUI.getSelectedItem());
-        		EasyTracker.getTracker().trackView("/Share/" + post.getTitle());
+        		EasyTracker.getTracker().sendView("/Share/" + post.getTitle());
         		Intent send = new Intent(android.content.Intent.ACTION_SEND);
         		send.setType("text/plain");
         		send.putExtra(android.content.Intent.EXTRA_SUBJECT, post.getTitle());
@@ -299,7 +298,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     		break;
     		
     	case R.id.About:
-    		EasyTracker.getTracker().trackView("/About");
+    		EasyTracker.getTracker().sendView("/About");
     		Intent info = new Intent(Main.this, DisplayFile.class);
 			info.putExtra("File", "about.html");
 			info.putExtra("Title", "About: ");
@@ -307,7 +306,7 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     		break;
 
     	case R.id.Upload:
-    		EasyTracker.getTracker().trackView("/Upload");
+    		EasyTracker.getTracker().sendView("/Upload");
     		Intent upload = new Intent(Main.this, CreateNewPost.class);
 			Main.this.startActivity(upload);
     		break;
