@@ -1,74 +1,64 @@
 package org.varunverma.desijokes;
 
-import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.Post;
-
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
 
-@SuppressLint("SetJavaScriptEnabled")
-public class PostDetailActivity extends Activity {
+public class PostDetailActivity extends FragmentActivity implements
+		PostDetailFragment.Callbacks {
 
-	private WebView wv;
-	private AdView adView;
-	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        
-    	super.onCreate(savedInstanceState);
-        setContentView(R.layout.post_detail);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
 
-        EasyTracker.getInstance().activityStart(this);
-        
-        AdRequest adRequest = new AdRequest();
-        adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
-        adRequest.addTestDevice("E16F3DE5DF824FE222EDDA27A63E2F8A");
-        AdView adView = (AdView) findViewById(R.id.adView);
-        
-        // Start loading the ad in the background.
-        adView.loadAd(adRequest);
-        	
-		// Find the ListView resource.   
-		wv = (WebView) findViewById( R.id.webview );
-		WebSettings webSettings = wv.getSettings();
-		webSettings.setJavaScriptEnabled(true);
-		wv.setBackgroundColor(Color.TRANSPARENT);
-		wv.setBackgroundResource(R.drawable.background);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.info);
+
+		EasyTracker.getInstance().activityStart(this);
 		
+		// Show Ad.
+		AdRequest adRequest = new AdRequest();
+		adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
+		adRequest.addTestDevice("E16F3DE5DF824FE222EDDA27A63E2F8A");
+		AdView adView = (AdView) findViewById(R.id.adView);
+
+		// Start loading the ad in the background.
+		adView.loadAd(adRequest);
+
 		Intent intent = getIntent();
 		int postId = intent.getIntExtra("PostId", 0);
-		
-		try{
-			Post post = Application.getApplicationInstance().getPostList().get(postId);
-			EasyTracker.getTracker().sendView("/PostTitle/" + post.getTitle());
-			wv.loadDataWithBaseURL("fake://not/needed", post.getHTMLCode(), "text/html", "UTF-8", "");
-		}catch(Exception e){
-			Log.e(Application.TAG, e.getMessage(), e);
-			finish();
-		}		
-		
-	}
-	
-	@Override
-	protected void onDestroy(){
-		if (adView != null) {
-			adView.destroy();
-		}
-		super.onDestroy();
+
+		// Create the Fragment.
+		FragmentManager fm = this.getSupportFragmentManager();
+
+		// Create Post List Fragment
+		Fragment fragment = new PostDetailFragment();
+		Bundle arguments = new Bundle();
+		arguments.putInt("PostId", postId);
+		fragment.setArguments(arguments);
+
+		fm.beginTransaction().replace(R.id.post_detail, fragment)
+				.commitAllowingStateLoss();
+
 	}
 
 	public void onStop() {
 		super.onStop();
 		EasyTracker.getInstance().activityStop(this);
+	}
+
+	@Override
+	public void loadPostsByCategory(String taxonomy, String name) {
+		// Nothing to do
+	}
+
+	@Override
+	public boolean isDualPane() {
+		return false;
 	}
 }

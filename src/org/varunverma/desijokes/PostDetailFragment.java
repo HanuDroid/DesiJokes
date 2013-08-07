@@ -3,9 +3,6 @@ package org.varunverma.desijokes;
 import java.text.SimpleDateFormat;
 
 import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.HanuFragmentInterface;
-import org.varunverma.hanu.Application.HanuGestureAnalyzer;
-import org.varunverma.hanu.Application.HanuGestureListener;
 import org.varunverma.hanu.Application.Post;
 
 import android.annotation.SuppressLint;
@@ -13,28 +10,21 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.google.ads.AdRequest;
-import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
 
 @SuppressLint("SetJavaScriptEnabled")
-public class PostDetailFragment extends Fragment implements HanuFragmentInterface, HanuGestureListener{
+public class PostDetailFragment extends Fragment{
 
 	private Post post;
 	private WebView wv;
 	private Callbacks activity = sDummyCallbacks;
-	private int position;
 	private Application app;
 	
 	public interface Callbacks {
@@ -69,10 +59,10 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
 		if(getArguments() != null){
 			if (getArguments().containsKey("PostId")) {
 				int index = getArguments().getInt("PostId");
-	        	if(index >= app.getPostList().size()){
-	        		index = app.getPostList().size();
+				if(index >= app.getPostList().size()){
+	        		index = app.getPostList().size() - 1;	// index is 0 based
 	        	}
-	            post = app.getPostList().get(index);
+        		post = app.getPostList().get(index);
 	        }
 		}
 	}
@@ -87,32 +77,10 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
 		
 		WebSettings webSettings = wv.getSettings();
 		webSettings.setJavaScriptEnabled(true);
+		wv.setBackgroundColor(Color.TRANSPARENT);
 		wv.addJavascriptInterface(new PostJavaScriptInterface(), "Main");
 		
-		// Fling handling
-		if(!activity.isDualPane()){
-			
-			wv.setBackgroundColor(Color.TRANSPARENT);
-			wv.setBackgroundResource(R.drawable.background);
-			
-			final GestureDetector detector = new GestureDetector(getActivity().getApplicationContext(), new HanuGestureAnalyzer(this));
-			wv.setOnTouchListener(new OnTouchListener() {
-				public boolean onTouch(View view, MotionEvent e) {
-					detector.onTouchEvent(e);
-					return false;
-				}
-			});
-		}
-		
 		showPost();
-		
-		AdRequest adRequest = new AdRequest();
-        adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
-        adRequest.addTestDevice("E16F3DE5DF824FE222EDDA27A63E2F8A");
-        AdView adView = (AdView) rootView.findViewById(R.id.adView);
-        
-        // Start loading the ad in the background.
-        adView.loadAd(adRequest);
 		
 		return rootView;
 	}
@@ -132,17 +100,6 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
         super.onDetach();
         activity = sDummyCallbacks;
     }
-    
-	@Override
-	public void reloadUI() {
-		// Reloading the UI
-		post = app.getPostList().get(0);	
-	}
-
-	@Override
-	public int getSelectedItem() {
-		return position;
-	}
 
 	private void showPost() {
 		
@@ -221,52 +178,6 @@ public class PostDetailFragment extends Fragment implements HanuFragmentInterfac
 
 		return html;
 		
-	}
-
-	@Override
-	public void swipeLeft() {
-		// Show Next
-		if (position == app.getPostList().size() - 1) {
-			position = 0;
-		} else {
-			position++;
-		}
-		
-		try{
-			post = app.getPostList().get(position);
-			showPost();
-		}catch(Exception e){
-			Log.e(Application.TAG, e.getMessage(), e);
-		}
-		
-	}
-
-	@Override
-	public void swipeRight() {
-		// Show Previous
-		if(position == 0){
-			position = app.getPostList().size() - 1;
-		}
-		else{
-			position--;
-		}
-		
-		try{
-			post = app.getPostList().get(position);
-			showPost();
-		}catch(Exception e){
-			Log.e(Application.TAG, e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public void swipeUp() {
-		//Nothing to do
-	}
-	
-	@Override
-	public void swipeDown() {
-		//Nothing to do		
 	}
 
 	class PostJavaScriptInterface{

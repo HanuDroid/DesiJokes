@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:id="@+id/rl"
-	android:layout_width="fill_parent"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-	<com.google.ads.AdView android:id="@+id/adView"
-		android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        ads:adUnitId="a1508c3f2a58df1"
-        ads:adSize="BANNER" >
-	</com.google.ads.AdView>
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+    </WebView>
 
-	<WebView
-    	android:id="@+id/webview"
-    	android:layout_above="@id/adView"
-    	android:layout_width="fill_parent"
-    	android:layout_height="fill_parent" >
-	</WebView>
-	
 </RelativeLayout>

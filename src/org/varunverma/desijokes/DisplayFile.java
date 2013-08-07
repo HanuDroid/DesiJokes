@@ -13,6 +13,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,13 +32,22 @@ public class DisplayFile extends Activity {
 	private AdView adView;
 	Application app = Application.getApplicationInstance();
 	
+	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);       
-        setContentView(R.layout.post_detail);
+		setContentView(R.layout.post_detail);
         
         my_web_view = (WebView) findViewById(R.id.webview);
+        
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
+        	my_web_view.setBackground(getResources().getDrawable(R.drawable.background));
+        }
+        else{
+        	my_web_view.setBackgroundDrawable(getResources().getDrawable(R.drawable.background));
+        }
+
         WebSettings webSettings = my_web_view.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		my_web_view.addJavascriptInterface(new FileJavaScriptInterface(), "File");

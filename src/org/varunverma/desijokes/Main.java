@@ -20,12 +20,17 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
 
 public class Main extends FragmentActivity implements PostListFragment.Callbacks, 
@@ -38,6 +43,8 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 	private boolean appClosing;
 	private HanuFragmentInterface fragmentUI;
 	private int postId;
+	private PostPagerAdapter pagerAdapter;
+	private ViewPager viewPager;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,10 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
         }
 		else{
 			dualPane = false;
+			FrameLayout postDetail = (FrameLayout) findViewById(R.id.post_detail);
+	        if(postDetail != null){
+	        	postDetail.setVisibility(View.GONE);
+	        }
 		}
         
         // Tracking.
@@ -128,6 +139,15 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 	private void startMainScreen() {
 
 		showWhatsNew();
+		
+		// Show Ad.
+		AdRequest adRequest = new AdRequest();
+		adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
+		adRequest.addTestDevice("E16F3DE5DF824FE222EDDA27A63E2F8A");
+		AdView adView = (AdView) findViewById(R.id.adView);
+
+		// Start loading the ad in the background.
+		adView.loadAd(adRequest);
 
 		// Load Posts.
 		Application.getApplicationInstance().getAllPosts();
@@ -143,16 +163,16 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 			arguments.putInt("PostId", postId);
 			fragment.setArguments(arguments);
 			fm.beginTransaction().replace(R.id.post_list, fragment).commitAllowingStateLoss();
+			
+			fragmentUI = (HanuFragmentInterface) fragment;
+			
 		} else {
-			// Create Post Detail Fragment
-			fragment = new PostDetailFragment();
-			Bundle arguments = new Bundle();
-			arguments.putInt("PostId", postId);
-			fragment.setArguments(arguments);
-			fm.beginTransaction().replace(R.id.post_detail, fragment).commitAllowingStateLoss();
-		}
+			// Create view Pager
+			viewPager = (ViewPager) findViewById(R.id.post_pager);
 
-		fragmentUI = (HanuFragmentInterface) fragment;
+			pagerAdapter = new PostPagerAdapter(getSupportFragmentManager(),app.getPostList().size());
+			viewPager.setAdapter(pagerAdapter);
+		}
 		
 	}
 
@@ -240,8 +260,11 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 	    outState.putBoolean("PwdEntered", true);
-	    if(fragmentUI != null){
+	    if(fragmentUI != null && dualPane){
 			outState.putInt("PostId", fragmentUI.getSelectedItem());
+		}
+		else if(!dualPane && viewPager != null){
+			outState.putInt("PostId", viewPager.getCurrentItem());
 		}
 	}
 	
@@ -255,11 +278,20 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	
+    	int id;
+    	
     	switch (item.getItemId()){
     	
     	case R.id.Rate:
+    		
+    		if(dualPane){
+    			id = fragmentUI.getSelectedItem();
+    		}
+    		else{
+    			id = viewPager.getCurrentItem();
+    		}
     		Intent rate = new Intent(Main.this, PostRating.class);
-    		rate.putExtra("PostId", fragmentUI.getSelectedItem());
+    		rate.putExtra("PostId", id);
 			Main.this.startActivity(rate);
     		break;
     		
@@ -284,7 +316,13 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     		
     	case R.id.Share:
     		try{
-    			Post post = app.getPostList().get(fragmentUI.getSelectedItem());
+    			if(dualPane){
+        			id = fragmentUI.getSelectedItem();
+        		}
+        		else{
+        			id = viewPager.getCurrentItem();
+        		}
+    			Post post = app.getPostList().get(id);
         		EasyTracker.getTracker().sendView("/Share/" + post.getTitle());
         		Intent send = new Intent(android.content.Intent.ACTION_SEND);
         		send.setType("text/plain");
@@ -318,6 +356,14 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     
     private void deletePost(){
     	
+    	final int postId;
+    	if(dualPane){
+    		postId = fragmentUI.getSelectedItem();
+		}
+		else{
+			postId = viewPager.getCurrentItem();
+		}
+    	
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Are you sure you want to delete? " +
 				"You won't be able to view this joke later.")
@@ -326,8 +372,10 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								try{
-									app.deletePost(app.getPostList().get(fragmentUI.getSelectedItem()).getId());
-						    		fragmentUI.reloadUI();
+									app.deletePost(app.getPostList().get(postId).getId());
+						    		if(dualPane){
+						    			fragmentUI.reloadUI();
+						    		}
 					    		}catch(Exception e){
 					    			Log.e(Application.TAG, e.getMessage(), e);
 					    			finish();
@@ -434,6 +482,11 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 			if(dualPane){
 				fragmentUI.reloadUI();
 			}
+			else{
+				pagerAdapter.setNewSize(app.getPostList().size());
+				pagerAdapter.notifyDataSetChanged();
+				viewPager.setCurrentItem(0);
+			}
 		}
 		
 	}
@@ -453,7 +506,14 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 		
 		this.runOnUiThread(new Runnable() {
 		    public void run(){
-		    	fragmentUI.reloadUI();
+		    	if(dualPane){
+		    		fragmentUI.reloadUI();
+		    	}
+		    	else{
+		    		pagerAdapter.setNewSize(app.getPostList().size());
+		    		pagerAdapter.notifyDataSetChanged();
+		    		viewPager.setCurrentItem(0);
+		    	}
 		    }
 		});
 	}

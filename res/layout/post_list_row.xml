@@ -11,6 +11,10 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:textSize="20sp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_margin="5dp"
+        android:paddingLeft="5dp"
+        android:gravity="center_vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
 

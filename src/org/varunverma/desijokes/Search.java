@@ -13,7 +13,9 @@ import android.provider.SearchRecentSuggestions;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.analytics.tracking.android.EasyTracker;
 
@@ -44,6 +46,8 @@ public class Search extends FragmentActivity implements PostListFragment.Callbac
         }
 		else{
 			dualPane = false;
+			ViewPager viewPager = (ViewPager) findViewById(R.id.post_pager);
+			viewPager.setVisibility(View.GONE);
 		}
         
         // Tracking.
