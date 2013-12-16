@@ -1,20 +1,16 @@
 package org.varunverma.desijokes;
 
-import org.varunverma.CommandExecuter.Invoker;
-import org.varunverma.CommandExecuter.ProgressInfo;
-import org.varunverma.CommandExecuter.ResultObject;
+import org.varunverma.desijokes.billingutil.IabHelper;
 import org.varunverma.hanu.Application.Application;
 import org.varunverma.hanu.Application.HanuFragmentInterface;
 import org.varunverma.hanu.Application.Post;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,20 +23,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.google.ads.AdRequest;
 import com.google.ads.AdView;
 import com.google.analytics.tracking.android.EasyTracker;
 
 public class Main extends FragmentActivity implements PostListFragment.Callbacks, 
-												PostDetailFragment.Callbacks, Invoker {
+												PostDetailFragment.Callbacks {
 
 	private boolean dualPane;
 	private Application app;
-	private ProgressDialog dialog;
-	private boolean firstUse;
-	private boolean appClosing;
 	private HanuFragmentInterface fragmentUI;
 	private int postId;
 	private PostPagerAdapter pagerAdapter;
@@ -78,76 +70,32 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
         // Get Application Instance.
         app = Application.getApplicationInstance();
         
-        // Set the context of the application
-        app.setContext(getApplicationContext());
-        // Accept my Terms
-        if(!app.isEULAAccepted()){
-        	// Show EULA.
-        	Intent eula = new Intent(Main.this, DisplayFile.class);
-        	eula.putExtra("File", "eula.html");
-			eula.putExtra("Title", "End User License Aggrement: ");
-			Main.this.startActivityForResult(eula, Application.EULA);
-        }
-        else{
-        	// Start the Main Activity
-        	String pwdEnabled = app.getOptions().get("pwd_enabled");
-        	if( pwdEnabled != null && Boolean.parseBoolean(pwdEnabled) && !pwdEntered){
-        		// Password is enabled !
-        		Intent password = new Intent(Main.this, Settings.class);
-        		password.putExtra("Code", "Password");
-    			Main.this.startActivityForResult(password, 999);
-        	}
-        	else{
-        		startMainActivity();
-        	}
-        }
+		// Start the Main Activity
+		String pwdEnabled = app.getOptions().get("pwd_enabled");
+		if (pwdEnabled != null && Boolean.parseBoolean(pwdEnabled)
+				&& !pwdEntered) {
+			// Password is enabled !
+			Intent password = new Intent(Main.this, Settings.class);
+			password.putExtra("Code", "Password");
+			Main.this.startActivityForResult(password, 999);
+		} else {
+			startMainScreen();
+		}
     }
 
-    private void startMainActivity() {
-		// Register application.
-        app.registerAppForGCM();
-        
-		// For the first use, ask language preference.
-		if (!app.getOptions().containsKey("EN_Lang")) {
-
-			Intent lang = new Intent(Main.this, Settings.class);
-			lang.putExtra("Code", "LangSettings");
-			Main.this.startActivityForResult(lang, 998);
-			return;
-
-		}
-                
-        // Initialize app...
-        if(app.isThisFirstUse()){
-        	// This is the first run ! 
-        	
-        	String message = "Please wait while the application is initialized for first usage...";
-    		dialog = ProgressDialog.show(Main.this, "", message, true);
-    		app.initializeAppForFirstUse(this);
-    		firstUse = true;
-        }
-        else{
-        	firstUse = false;
-        	app.initialize(this);
-        	
-        	// Start Main Activity.
-        	startMainScreen();
-        }
-
-	}
-
 	private void startMainScreen() {
-
-		showWhatsNew();
 		
-		// Show Ad.
-		AdRequest adRequest = new AdRequest();
-		adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
-		adRequest.addTestDevice("E16F3DE5DF824FE222EDDA27A63E2F8A");
-		AdView adView = (AdView) findViewById(R.id.adView);
+		if (!Constants.isPremiumVersion()) {
+			
+			// Show Ad.
+			AdRequest adRequest = new AdRequest();
+			adRequest.addTestDevice(AdRequest.TEST_EMULATOR);
+			adRequest.addTestDevice("E16F3DE5DF824FE222EDDA27A63E2F8A");
+			AdView adView = (AdView) findViewById(R.id.adView);
 
-		// Start loading the ad in the background.
-		adView.loadAd(adRequest);
+			// Start loading the ad in the background.
+			adView.loadAd(adRequest);
+		}
 
 		// Load Posts.
 		Application.getApplicationInstance().getAllPosts();
@@ -176,39 +124,6 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 		
 	}
 
-	private void showWhatsNew() {
-		// Show what's new in this version.
-		int oldFrameworkVersion = app.getOldFrameworkVersion();
-		int newFrameworkVersion = app.getNewFrameworkVersion();
-		
-		int oldAppVersion = app.getOldAppVersion();
-		int newAppVersion;
-		try {
-			newAppVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-		} catch (NameNotFoundException e) {
-			newAppVersion = 0;
-			Log.e(Application.TAG, e.getMessage(), e);
-		}
-		
-		if(firstUse){
-			showHelp();
-			return;
-		}
-		
-		if(newAppVersion > oldAppVersion ||
-			newFrameworkVersion > oldFrameworkVersion){
-			
-			app.updateVersion();
-			
-			Intent info = new Intent(Main.this, DisplayFile.class);
-			info.putExtra("File", "NewFeatures.html");
-			info.putExtra("Title", "What's New?");
-			Main.this.startActivity(info);
-			
-		}
-		
-	}
-
 	private void showHelp() {
 		// Show Help
 		EasyTracker.getTracker().sendView("/Help");
@@ -229,6 +144,10 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
             SearchView searchView = (SearchView) menu.findItem(R.id.Search).getActionView();
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             searchView.setIconifiedByDefault(false);
+        }
+        
+        if(Constants.isPremiumVersion()){
+        	menu.findItem(R.id.Buy).setVisible(false);
         }
         
         return true;
@@ -270,7 +189,14 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
 	
 	@Override
 	protected void onDestroy(){
-		appClosing = true;
+		
+		// Close billing helper
+		try {
+			IabHelper.getInstance().dispose();
+		} catch (Exception e) {
+			Log.w(Application.TAG, e.getMessage(), e);
+		}
+
 		app.close();
 		super.onDestroy();
 	}
@@ -293,6 +219,11 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     		Intent rate = new Intent(Main.this, PostRating.class);
     		rate.putExtra("PostId", id);
 			Main.this.startActivity(rate);
+    		break;
+    		
+    	case R.id.Buy:
+    		Intent buy = new Intent(Main.this, ActivatePremiumFeatures.class);
+    		Main.this.startActivityForResult(buy,900);
     		break;
     		
     	case R.id.Delete:
@@ -395,101 +326,25 @@ public class Main extends FragmentActivity implements PostListFragment.Callbacks
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     	
     	switch (requestCode) {
-    	
-    	case Application.EULA:
-    		if(!app.isEULAAccepted()){
-    			finish();
-    		}
-    		else{
-    			// Start Main Activity
-    			startMainActivity();
-    		}
-    		break;
-    		
-    	case 998:
-    		if(resultCode == RESULT_OK){
-    			startMainActivity();
-    		}
-    		else{
-    			finish();
-    		}
+
+    	case 900:
+    		if(data.getBooleanExtra("RestartApp", false)){
+				finish();
+			}
     		break;
     		
     	case 999:
     		if(resultCode == RESULT_OK){
-    			startMainActivity();
+    			startMainScreen();
     		}
     		else{
     			finish();
     		}
-    	
+    		break;
+    		
     	}
     }
         
-	@Override
-	public void NotifyCommandExecuted(ResultObject result) {
-		
-		if(appClosing && result.getResultStatus() == ResultObject.ResultStatus.CANCELLED){
-			app.close();
-		}
-		
-		if(!result.isCommandExecutionSuccess()){
-			
-			if(result.getResultCode() == 420){
-				// Application is not registered.
-				String message = "This application is not registered with Hanu-Droid.\n" +
-						"Please inform the developer about this error.";
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-				alertDialogBuilder
-					.setTitle("Application not registered !")
-					.setMessage(message)
-					.setCancelable(false)
-					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-												public void onClick(DialogInterface dialog,int id) {
-													Main.this.finish();	}})
-					.create()
-					.show();
-			}
-			
-			Toast.makeText(getApplicationContext(), result.getErrorMessage(), Toast.LENGTH_LONG).show();
-		}
-		
-		if(firstUse){
-			
-			if(dialog.isShowing()){
-				
-				dialog.dismiss();
-				startMainScreen();	// Start Main Activity.
-			}
-		}		
-	}
-
-	@Override
-	public void ProgressUpdate(ProgressInfo progress) {
-		// Show UI.
-		if(progress.getProgressMessage().contentEquals("Show UI")){
-			
-			if(dialog.isShowing()){
-				
-				dialog.dismiss();
-				startMainScreen();	// Start Main Activity.
-			}
-		}
-		
-		// Update UI.
-		if(progress.getProgressMessage().contentEquals("Update UI")){
-			app.getAllPosts();
-			if(dualPane){
-				fragmentUI.reloadUI();
-			}
-			else{
-				pagerAdapter.setNewSize(app.getPostList().size());
-				pagerAdapter.notifyDataSetChanged();
-				viewPager.setCurrentItem(0);
-			}
-		}
-		
-	}
 
 	@Override
 	public void loadPostsByCategory(String taxonomy, String name) {

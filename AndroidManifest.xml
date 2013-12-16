@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.varunverma.desijokes"
     android:installLocation="auto"
-    android:versionCode="23"
-    android:versionName="2.0.1" >
+    android:versionCode="24"
+    android:versionName="2.0.2" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.VIBRATE" />
+	<uses-permission android:name="com.android.vending.BILLING" />
 	<permission android:name="org.varunverma.desijokes.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 	<uses-permission android:name="org.varunverma.desijokes.permission.C2D_MESSAGE" />
 	<!-- App receives GCM messages. -->
@@ -33,12 +34,23 @@
             android:authorities="org.varunverma.desijokes.SearchSuggestionProvider" />
         
         <activity
-            android:name=".Main"
+            android:name=".SplashScreen"
             android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".Main"
+            android:configChanges="orientation|keyboardHidden"
+            android:exported="false"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
             <!-- enable the search dialog to send searches to SearchableActivity -->
         	<meta-data android:name="android.app.default_searchable"
@@ -61,6 +73,16 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.SETTINGS" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name=".ActivatePremiumFeatures"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.PREMIUM_FEATURES" />
             </intent-filter>
         </activity>
         
