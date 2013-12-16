@@ -159,7 +159,12 @@ public class Settings extends Activity implements OnClickListener {
 		
 		Application app = Application.getApplicationInstance();
 		
-		if(app.getOptions().get("password").contentEquals(password.getEditableText().toString())){
+		String pwd = app.getOptions().get("password");
+		if(pwd == null){
+			return true;
+		}
+		
+		if(pwd.contentEquals(password.getEditableText().toString())){
 			return true;
 		}
 		
