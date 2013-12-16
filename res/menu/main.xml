@@ -7,6 +7,12 @@
 		  android:title="Rate this joke">
 	</item>
 	
+    <item android:icon="@drawable/buy"
+		  android:id="@+id/Buy"
+		  android:showAsAction="ifRoom"
+		  android:title="Upgrade to Premium">
+	</item>
+	
     <item
         android:id="@+id/Search"
         android:title="Search"

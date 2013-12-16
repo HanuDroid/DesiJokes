@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Main" >
+
+    <TextView
+        android:id="@+id/hq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/hanu_droid"
+        android:textColor="#f80"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/hq"
+        android:layout_centerHorizontal="true"
+        android:text="@string/app_name"
+        android:textSize="40sp"
+        android:layout_marginBottom="20dp"
+        android:textColor="#33b5e5"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_above="@+id/app_name"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_launcher" />
+    
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/hq"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+        
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/progressbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="@string/loading"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</RelativeLayout>
