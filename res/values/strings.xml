@@ -9,6 +9,7 @@
     <string name="content">Write Content here</string>
     <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
+    <string name="accept">I Agree</string>
     <string name="nick_name">Name</string>
     <string name="loading">Loading....</string>
     

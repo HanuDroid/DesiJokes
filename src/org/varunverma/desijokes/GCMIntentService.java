@@ -88,7 +88,7 @@ public class GCMIntentService extends HanuGCMIntentService {
 			title = postsDownloaded + " new joke(s) have been downloaded";
 		}
 
-		Intent notificationIntent = new Intent(this, Main.class);
+		Intent notificationIntent = new Intent(this, SplashScreen.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 
 		NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(this)

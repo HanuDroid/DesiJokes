@@ -55,8 +55,7 @@ public class SplashScreen extends Activity implements Invoker,
         EasyTracker.getInstance().activityStart(this);
         
 		// Accept my Terms
-        app.setEULAResult(true);
-		if (!app.isEULAAccepted()) {
+        if (!app.isEULAAccepted()) {
 			
 			Intent eula = new Intent(SplashScreen.this, DisplayFile.class);
         	eula.putExtra("File", "eula.html");
@@ -70,31 +69,34 @@ public class SplashScreen extends Activity implements Invoker,
 		
 	}
 	
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		
-	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-	    	
-    		return true;
-	    }
-
-	    return super.onKeyDown(keyCode, event);
-	}
-	
 	private void startMainActivity() {
 		
-		// Register application.
-        app.registerAppForGCM();
+		// Ask for Language Option
+		if (!app.getOptions().containsKey("EN_Lang")) {
+			
+			askForLanguageOption();
+			
+			return;
+		}
 		
 		// Instantiate billing helper class
 		billingHelper = IabHelper.getInstance(this, Constants.getPublicKey());
 		
-		// Set up
-		try{
-			billingHelper.startSetup(this);
+		if(billingHelper.isSetupComplete()){
+			// Set up is already done... so Initialize app.
+			initializeApp();
 		}
-		catch(Exception e){
-			Log.w(Application.TAG, e.getMessage(), e);
+		else{
+			// Set up
+			try{
+				billingHelper.startSetup(this);
+			}
+			catch(Exception e){
+				// Oh Fuck !
+				Log.w(Application.TAG, e.getMessage(), e);
+				billingHelper.dispose();
+				finish();
+			}
 		}
 
 	}
@@ -114,12 +116,14 @@ public class SplashScreen extends Activity implements Invoker,
 			
 		case 900:
 			
+			firstUse = false;		
 			startApp();
+			break;
 			
-			// Kill this activity.
-			Log.i(Application.TAG, "Kill Main Activity");
-			SplashScreen.this.finish();
+		case 901:
 			
+			showNewFeatures = false;		
+			startApp();
 			break;
 			
 		case 998:
@@ -133,18 +137,18 @@ public class SplashScreen extends Activity implements Invoker,
 		}
 	}
 	
+	private void askForLanguageOption(){
+		
+		Intent lang = new Intent(SplashScreen.this, Settings.class);
+		lang.putExtra("Code", "LangSettings");
+		SplashScreen.this.startActivityForResult(lang, 998);
+	}
+	
 	private void initializeApp(){
 		
-		// For the first use, ask language preference.
-		if (!app.getOptions().containsKey("EN_Lang")) {
+		// Register application.
+        app.registerAppForGCM();
 
-			Intent lang = new Intent(SplashScreen.this, Settings.class);
-			lang.putExtra("Code", "LangSettings");
-			SplashScreen.this.startActivityForResult(lang, 998);
-			return;
-
-		}
-		
 		// Initialize app...
 		if (app.isThisFirstUse()) {
 			// This is the first run !
@@ -206,10 +210,14 @@ public class SplashScreen extends Activity implements Invoker,
 					create().
 					show();
 			}
+			else{
+				startApp();
+			}
 		}
-		
-		// Start the app
-		startApp();
+		else{
+			// Start the app
+			startApp();
+		}
 
 	}
 
@@ -227,7 +235,7 @@ public class SplashScreen extends Activity implements Invoker,
 		Intent newFeatures = new Intent(SplashScreen.this, DisplayFile.class);
 		newFeatures.putExtra("File", "NewFeatures.html");
 		newFeatures.putExtra("Title", "New Features: ");
-		SplashScreen.this.startActivityForResult(newFeatures, 900);
+		SplashScreen.this.startActivityForResult(newFeatures, 901);
 	}
 
 	private void startApp() {
@@ -236,16 +244,18 @@ public class SplashScreen extends Activity implements Invoker,
 			return;
 		}
 		
-		appStarted = true;
+		if (firstUse) {
+			showHelp();
+			return;
+		}
 		
 		if (showNewFeatures) {
 			showWhatsNew();
+			return;
 		}
-
-		if (firstUse) {
-			showHelp();
-		}
-
+		
+		appStarted = true;
+		
 		// Start the Quiz List
 		Log.i(Application.TAG, "Start Quiz List");
 		Intent start = new Intent(SplashScreen.this, Main.class);
@@ -359,4 +369,14 @@ public class SplashScreen extends Activity implements Invoker,
 		super.onDestroy();
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		
+	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+	    	
+    		return true;
+	    }
+
+	    return super.onKeyDown(keyCode, event);
+	}
 }

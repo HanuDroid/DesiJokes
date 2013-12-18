@@ -206,6 +206,10 @@ public class IabHelper {
         public void onIabSetupFinished(IabResult result);
     }
 
+    public boolean isSetupComplete(){
+    	return mSetupDone;
+    }
+    
     /**
      * Starts the setup process. This will start up the setup process asynchronously.
      * You will be notified through the listener when the setup process is complete.
