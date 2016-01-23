@@ -3,6 +3,7 @@ package org.varunverma.desijokes;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -27,13 +28,19 @@ public class CreateNewPost extends AppCompatActivity implements OnClickListener,
 		
 		super.onCreate(savedInstanceState);
 
-		Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-		setSupportActionBar(myToolbar);
-		
 		setContentView(R.layout.create_post);
 		setTitle("Upload new Joke");
 
-        title = (EditText) findViewById(R.id.title);
+		Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+		setSupportActionBar(myToolbar);
+
+		// Get a support ActionBar corresponding to this toolbar
+		ActionBar ab = getSupportActionBar();
+
+		// Enable the Up button
+		ab.setDisplayHomeAsUpEnabled(true);
+
+		title = (EditText) findViewById(R.id.title);
 		content = (EditText) findViewById(R.id.content);
 		
 		// Initialize Application

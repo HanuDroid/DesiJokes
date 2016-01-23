@@ -3,11 +3,13 @@
  */
 package org.varunverma.desijokes;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -26,7 +28,7 @@ import org.varunverma.hanu.Application.Application;
  * @author varun
  *
  */
-public class ActivatePremiumFeatures extends Activity implements
+public class ActivatePremiumFeatures extends AppCompatActivity implements
 		OnClickListener, OnIabPurchaseFinishedListener {
 
 	private TextView prodName, prodDesc, prodHelp;
@@ -38,6 +40,15 @@ public class ActivatePremiumFeatures extends Activity implements
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.premium_features);
+
+		Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+		setSupportActionBar(myToolbar);
+
+		// Get a support ActionBar corresponding to this toolbar
+		ActionBar ab = getSupportActionBar();
+
+		// Enable the Up button
+		ab.setDisplayHomeAsUpEnabled(true);
 		
 		prodName = (TextView) findViewById(R.id.product_name);
 		prodDesc = (TextView) findViewById(R.id.product_desc);

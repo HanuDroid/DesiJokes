@@ -11,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -128,22 +127,6 @@ public class Search extends AppCompatActivity implements PostListFragment.Callba
 			Search.this.startActivity(postDetail);
 		}
 	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		
-		switch (item.getItemId()) {
-		
-			case android.R.id.home:
-				finish();
-				return true;
-				
-			default:
-	            return super.onOptionsItemSelected(item);
-		}
-		
-	}
-	
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
