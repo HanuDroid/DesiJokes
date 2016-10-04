@@ -2,8 +2,7 @@ package org.varunverma.desijokes;
 
 import android.content.Intent;
 
-import org.varunverma.hanu.Application.HanuGCMRegistrationService;
-
+import com.ayansh.hanudroid.HanuGCMRegistrationService;
 
 public class AppRegistrationService extends HanuGCMRegistrationService {
 

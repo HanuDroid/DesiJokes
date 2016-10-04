@@ -10,18 +10,19 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
-import org.varunverma.CommandExecuter.CommandExecuter;
-import org.varunverma.CommandExecuter.Invoker;
-import org.varunverma.CommandExecuter.ProgressInfo;
-import org.varunverma.CommandExecuter.ResultObject;
+import com.ayansh.CommandExecuter.CommandExecuter;
+import com.ayansh.CommandExecuter.Invoker;
+import com.ayansh.CommandExecuter.ProgressInfo;
+import com.ayansh.CommandExecuter.ResultObject;
+import com.ayansh.hanudroid.Application;
+import com.ayansh.hanudroid.SaveRegIdCommand;
+
 import org.varunverma.desijokes.billingutil.IabHelper;
 import org.varunverma.desijokes.billingutil.IabHelper.OnIabSetupFinishedListener;
 import org.varunverma.desijokes.billingutil.IabHelper.QueryInventoryFinishedListener;
 import org.varunverma.desijokes.billingutil.IabResult;
 import org.varunverma.desijokes.billingutil.Inventory;
 import org.varunverma.desijokes.billingutil.Purchase;
-import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.SaveRegIdCommand;
 
 import java.util.ArrayList;
 import java.util.List;

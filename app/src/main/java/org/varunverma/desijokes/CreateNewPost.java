@@ -12,14 +12,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import org.varunverma.CommandExecuter.CommandExecuter;
-import org.varunverma.CommandExecuter.Invoker;
-import org.varunverma.CommandExecuter.ProgressInfo;
-import org.varunverma.CommandExecuter.ResultObject;
-import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.CreateNewPostCommand;
+import com.ayansh.CommandExecuter.CommandExecuter;
+import com.ayansh.CommandExecuter.Invoker;
+import com.ayansh.CommandExecuter.ProgressInfo;
+import com.ayansh.CommandExecuter.ResultObject;
+import com.ayansh.hanudroid.Application;
+import com.ayansh.hanudroid.CreateNewPostCommand;
 
-public class CreateNewPost extends AppCompatActivity implements OnClickListener, Invoker{
+public class CreateNewPost extends AppCompatActivity implements OnClickListener, Invoker {
 
 	private ProgressDialog pd;
 	private EditText title, content;

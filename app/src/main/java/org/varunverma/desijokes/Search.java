@@ -14,8 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.HanuFragmentInterface;
+import com.ayansh.hanudroid.Application;
+import com.ayansh.hanudroid.HanuFragmentInterface;
 
 public class Search extends AppCompatActivity implements PostListFragment.Callbacks,
 												PostDetailFragment.Callbacks {

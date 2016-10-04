@@ -14,7 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.varunverma.hanu.Application.Application;
+import com.ayansh.hanudroid.Application;
 
 public class Settings extends AppCompatActivity implements OnClickListener {
 	

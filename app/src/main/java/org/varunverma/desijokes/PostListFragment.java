@@ -1,15 +1,5 @@
 package org.varunverma.desijokes;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-
-import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.HanuFragmentInterface;
-import org.varunverma.hanu.Application.Post;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -21,7 +11,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class PostListFragment extends ListFragment implements HanuFragmentInterface{
+import com.ayansh.hanudroid.Application;
+import com.ayansh.hanudroid.HanuFragmentInterface;
+import com.ayansh.hanudroid.Post;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
+
+public class PostListFragment extends ListFragment implements HanuFragmentInterface {
 
 	private ListView listView;
 	private Callbacks activity = sDummyCallbacks;

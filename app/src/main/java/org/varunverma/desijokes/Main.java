@@ -21,13 +21,13 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 
+import com.ayansh.hanudroid.Application;
+import com.ayansh.hanudroid.HanuFragmentInterface;
+import com.ayansh.hanudroid.Post;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 import org.varunverma.desijokes.billingutil.IabHelper;
-import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.HanuFragmentInterface;
-import org.varunverma.hanu.Application.Post;
 
 public class Main extends AppCompatActivity implements PostListFragment.Callbacks,
 												PostDetailFragment.Callbacks {
@@ -70,6 +70,7 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 
         // Get Application Instance.
         app = Application.getApplicationInstance();
+		app.setContext(getApplicationContext());
         
 		// Start the Main Activity
 		String pwdEnabled = app.getOptions().get("pwd_enabled");
@@ -282,10 +283,12 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
         			id = viewPager.getCurrentItem();
         		}
     			Post post = app.getPostList().get(id);
+				String post_content = post.getContent(true);
+				post_content += "\n\n via ~ ayansh.com/dj";
         		Intent send = new Intent(android.content.Intent.ACTION_SEND);
         		send.setType("text/plain");
         		send.putExtra(android.content.Intent.EXTRA_SUBJECT, post.getTitle());
-        		send.putExtra(android.content.Intent.EXTRA_TEXT, post.getContent(true));
+        		send.putExtra(android.content.Intent.EXTRA_TEXT, post_content);
         		startActivity(Intent.createChooser(send, "Share with..."));
     		}catch(Exception e){
     			Log.e(Application.TAG, e.getMessage(), e);

@@ -15,11 +15,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.ayansh.hanudroid.Application;
 import com.google.android.gms.ads.AdView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.varunverma.hanu.Application.Application;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,10 +53,10 @@ public class DisplayFile extends AppCompatActivity {
         my_web_view = (WebView) findViewById(R.id.webview);
         
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
-        	my_web_view.setBackground(getResources().getDrawable(R.drawable.background));
+        	my_web_view.setBackground(getResources().getDrawable(R.mipmap.background));
         }
         else{
-        	my_web_view.setBackgroundDrawable(getResources().getDrawable(R.drawable.background));
+        	my_web_view.setBackgroundDrawable(getResources().getDrawable(R.mipmap.background));
         }
 
         WebSettings webSettings = my_web_view.getSettings();
@@ -118,7 +118,7 @@ public class DisplayFile extends AppCompatActivity {
 	private void showFromRawSource() {
 		my_web_view.clearCache(true);
         my_web_view.setBackgroundColor(0);
-        my_web_view.setBackgroundResource(R.drawable.background);
+        my_web_view.setBackgroundResource(R.mipmap.background);
         my_web_view.loadData(html_text, "text/html", "utf-8");
 	}
 

@@ -55,14 +55,14 @@
                 android:id="@+id/buy"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:drawableLeft="@drawable/buy"
+                android:drawableLeft="@mipmap/buy"
                 android:layout_height="match_parent" />
 
             <Button
                 android:id="@+id/cancel"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:drawableLeft="@drawable/cancel"
+                android:drawableLeft="@mipmap/cancel"
                 android:layout_height="match_parent"
                 android:text="@string/cancel" />
         </LinearLayout>

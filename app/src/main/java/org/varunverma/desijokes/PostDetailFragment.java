@@ -1,10 +1,5 @@
 package org.varunverma.desijokes;
 
-import java.text.SimpleDateFormat;
-
-import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.Post;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
@@ -16,6 +11,11 @@ import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
+import com.ayansh.hanudroid.Application;
+import com.ayansh.hanudroid.Post;
+
+import java.text.SimpleDateFormat;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class PostDetailFragment extends Fragment{

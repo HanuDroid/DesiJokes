@@ -3,9 +3,6 @@
  */
 package org.varunverma.desijokes;
 
-import org.varunverma.hanu.Application.Application;
-import org.varunverma.hanu.Application.Post;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -13,6 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
+
+import com.ayansh.hanudroid.Application;
+import com.ayansh.hanudroid.Post;
 
 /**
  * @author Varun

@@ -18,11 +18,12 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.ayansh.hanudroid.Application;
+
 import org.varunverma.desijokes.billingutil.IabHelper;
 import org.varunverma.desijokes.billingutil.IabHelper.OnIabPurchaseFinishedListener;
 import org.varunverma.desijokes.billingutil.IabResult;
 import org.varunverma.desijokes.billingutil.Purchase;
-import org.varunverma.hanu.Application.Application;
 
 /**
  * @author varun
