@@ -18,6 +18,7 @@ import com.ayansh.CommandExecuter.ProgressInfo;
 import com.ayansh.CommandExecuter.ResultObject;
 import com.ayansh.hanudroid.Application;
 import com.ayansh.hanudroid.CreateNewPostCommand;
+import com.google.android.gms.ads.InterstitialAd;
 
 public class CreateNewPost extends AppCompatActivity implements OnClickListener, Invoker {
 
@@ -77,6 +78,7 @@ public class CreateNewPost extends AppCompatActivity implements OnClickListener,
 			break;
 			
 		case R.id.cancel:
+			showInterstitialAd();
 			finish();
 			break;
 		
@@ -111,6 +113,7 @@ public class CreateNewPost extends AppCompatActivity implements OnClickListener,
 		
 		if(result.isCommandExecutionSuccess() && result.getResultCode() == 200){
 			Toast.makeText(this, "Joke uploaded successfully...", Toast.LENGTH_LONG).show();
+			showInterstitialAd();
 			finish();
 		}
 		else{
@@ -124,6 +127,16 @@ public class CreateNewPost extends AppCompatActivity implements OnClickListener,
 	public void ProgressUpdate(ProgressInfo progress) {
 		// Nothing to do
 		
+	}
+
+	private void showInterstitialAd(){
+
+		if (!Constants.isPremiumVersion()) {
+			InterstitialAd iad = MyInterstitialAd.getInterstitialAd(this);
+			if(iad.isLoaded()){
+				iad.show();
+			}
+		}
 	}
 	
 }

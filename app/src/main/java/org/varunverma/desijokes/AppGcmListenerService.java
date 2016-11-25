@@ -9,39 +9,40 @@ import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
 import com.ayansh.CommandExecuter.ResultObject;
-import com.ayansh.hanudroid.HanuGCMListenerService;
+import com.ayansh.hanudroid.HanuFCMMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
-public class AppGcmListenerService extends HanuGCMListenerService {
+public class AppGcmListenerService extends HanuFCMMessagingService {
 
 	@Override
-	public void onMessageReceived(String from, Bundle data) {
+	public void onMessageReceived(RemoteMessage remoteMessage) {
 
-		String message = data.getString("message");
+		String message = remoteMessage.getData().get("message");
 
 		if(message.contentEquals("InfoMessage")){
 			// Show message.
-			showInfoMessage(data);
+			showInfoMessage(remoteMessage.getData());
 		}
 		else {
 
-			ResultObject result = processMessage(from, data);
+			ResultObject result = processMessage(remoteMessage);
 			if (result.getData().getBoolean("ShowNotification")) {
 				createNotification(result);
 			}
 		}
-
 	}
 
-	private void showInfoMessage(Bundle data) {
+	private void showInfoMessage(Map<String,String> data) {
 		// Show Info Message
 
-		String subject = data.getString("subject");
-		String content = data.getString("content");
-		String mid = data.getString("message_id");
-		String message = data.getString("message");
+		String subject = data.get("subject");
+		String content = data.get("content");
+		String mid = data.get("message_id");
+		String message = data.get("message");
 
 		if(mid == null || mid.contentEquals("")){
 			mid = "0";

@@ -150,12 +150,6 @@ public class SplashScreen extends Activity implements Invoker,
 
 		if(regId == null || regId.contentEquals("")) {
 
-			Intent intent = new Intent(this, AppRegistrationService.class);
-			startService(intent);
-
-		}
-		else {
-
 			if (regStatus == null || regStatus.contentEquals("")) {
 
 				CommandExecuter ce = new CommandExecuter();
