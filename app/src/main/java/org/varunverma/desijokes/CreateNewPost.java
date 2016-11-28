@@ -103,6 +103,10 @@ public class CreateNewPost extends AppCompatActivity implements OnClickListener,
 		pd = ProgressDialog.show(this, "Uploading Joke", "Uploading new joke, please wait...");
 		
 		ce.execute(command);
+
+		Bundle bundle = new Bundle();
+		bundle.putString("action", "joke_upload");
+		Application.getApplicationInstance().getFirebaseAnalytics().logEvent("joke_upload", bundle);
 	}
 
 	@Override

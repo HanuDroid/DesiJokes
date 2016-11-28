@@ -49,6 +49,10 @@ public class PostRating extends Activity implements OnRatingBarChangeListener {
         ratingBar.setNumStars(5);
         ratingBar.setRating(post.getMyRating());
         ratingBar.setOnRatingBarChangeListener(this);
+
+		Bundle bundle = new Bundle();
+		bundle.putString("post_id", post.getTitle());
+		Application.getApplicationInstance().getFirebaseAnalytics().logEvent("post_rating", bundle);
         
 	}
 

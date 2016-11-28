@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ayansh.hanudroid.Application;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.varunverma.desijokes.billingutil.IabHelper;
 import org.varunverma.desijokes.billingutil.IabHelper.OnIabPurchaseFinishedListener;
@@ -60,7 +61,13 @@ public class ActivatePremiumFeatures extends AppCompatActivity implements
 		
 		cancel = (Button) findViewById(R.id.cancel);
 		cancel.setOnClickListener(this);
-				
+
+		// Log Firebase Event
+		Bundle bundle = new Bundle();
+		bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "premium_user");
+		bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "Premium User");
+		Application.getApplicationInstance().getFirebaseAnalytics().logEvent(FirebaseAnalytics.Event.PRESENT_OFFER, bundle);
+
 	}
 	
 	@Override

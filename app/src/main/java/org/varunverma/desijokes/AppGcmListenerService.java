@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
 import com.ayansh.CommandExecuter.ResultObject;
+import com.ayansh.hanudroid.Application;
 import com.ayansh.hanudroid.HanuFCMMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -20,6 +21,9 @@ public class AppGcmListenerService extends HanuFCMMessagingService {
 
 	@Override
 	public void onMessageReceived(RemoteMessage remoteMessage) {
+
+		// Be Safe. Set Context.
+		Application.getApplicationInstance().setContext(getApplicationContext());
 
 		String message = remoteMessage.getData().get("message");
 
