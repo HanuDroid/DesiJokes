@@ -18,7 +18,7 @@ import com.ayansh.hanudroid.Application;
 
 public class Settings extends AppCompatActivity implements OnClickListener {
 	
-	private CheckBox pwdEnabled;
+	private CheckBox pwdEnabled, showMemes;
 	private TextView password;
 	private RadioButton rbLangAll, rbLangEn;
 	private Button save, cancel;
@@ -48,6 +48,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         password = (TextView) findViewById(R.id.password);
         rbLangAll = (RadioButton) findViewById(R.id.lang_All);
         rbLangEn = (RadioButton) findViewById(R.id.lang_en);
+		showMemes = (CheckBox) findViewById(R.id.show_memes);
         
         save = (Button) findViewById(R.id.ok);
         save.setOnClickListener(this);
@@ -204,7 +205,9 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 			if(rbLangAll.isChecked()){
 				
 				app.addParameter("EN_Lang", "false");
-				app.removeSyncCategory("English");
+				// Set both English and Hindi
+				app.addSyncCategory("English");
+				app.addSyncCategory("Hindi");
 			}
 			else{
 				
@@ -213,8 +216,28 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
 				// Add to Sync Parameters
 				app.addSyncCategory("English");
+				app.removeSyncCategory("Hindi");
 				
 			}
+
+			if(showMemes.isChecked()){
+
+				// Show Memes - Save Parameter
+				app.addParameter("Show_Memes", String.valueOf(true));
+
+				// Add to Sync Parameters
+				app.addSyncCategory("Meme");
+
+			}
+			else{
+
+				// Show Memes - Save Parameter
+				app.addParameter("Show_Memes", String.valueOf(false));
+
+				// Add to Sync Parameters
+				app.removeSyncCategory("Meme");
+			}
+
 		}
 		
 		if(code.contentEquals("LangSettings")){
@@ -222,7 +245,8 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 			if(rbLangAll.isChecked()){
 				
 				app.addParameter("EN_Lang", "false");
-				app.removeSyncCategory("English");
+				app.addSyncCategory("English");
+				app.addSyncCategory("Hindi");
 			}
 			else{
 				
@@ -231,6 +255,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
 				// Add to Sync Parameters
 				app.addSyncCategory("English");
+				app.removeSyncCategory("Hindi");
 				
 			}
         }

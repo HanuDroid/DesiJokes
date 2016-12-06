@@ -49,6 +49,23 @@
         
         <View
             android:layout_width="fill_parent"
+            android:layout_marginTop="10sp"
+            android:layout_height="1dp"
+            android:layout_margin="5dp"
+            android:background="@color/grey" />
+
+        <CheckBox
+            android:id="@+id/show_memes"
+            android:layout_marginTop="10sp"
+            android:layout_marginBottom="10sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Show memes ( pictures and gifs )" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_marginTop="10sp"
             android:layout_height="1dp"
             android:layout_margin="5dp"
             android:background="@color/grey" />

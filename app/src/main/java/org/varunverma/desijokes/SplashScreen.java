@@ -199,6 +199,19 @@ public class SplashScreen extends Activity implements Invoker,
 				showNewFeatures = true;
 				app.updateVersion();
 			}
+
+			if(oldAppVersion <= 52){
+				// Set Categories
+				boolean en_lang = Boolean.valueOf(app.getOptions().get("EN_Lang"));
+				if(en_lang){
+					app.addSyncCategory("English");
+				}
+				else{
+					app.addSyncCategory("English");
+					app.addSyncCategory("Hindi");
+				}
+				app.addParameter("Show_Memes", String.valueOf(false));
+			}
 		}
 		
 	}
