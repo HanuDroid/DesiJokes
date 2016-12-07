@@ -23,12 +23,15 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 	private RadioButton rbLangAll, rbLangEn;
 	private Button save, cancel;
 	private String code;
+	private Application app;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);       
         setContentView(R.layout.settings);
+
+		app = Application.getApplicationInstance();
 
 		Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
@@ -104,6 +107,14 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 			else{
 				rbLangAll.setChecked(true);
 				rbLangEn.setChecked(false);
+			}
+
+			boolean show_memes = Boolean.valueOf(app.getOptions().get("Show_Memes"));
+			if(show_memes){
+				showMemes.setChecked(true);
+			}
+			else{
+				showMemes.setChecked(false);
 			}
 			
 		}
@@ -184,86 +195,84 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 	}
 
 	private void saveSettings() {
-		
-		Application app = Application.getApplicationInstance();
-		
+
 		if(code.contentEquals("Settings")){
-			
-			if(pwdEnabled.isChecked()){
-				
-				app.addParameter("pwd_enabled", String.valueOf(pwdEnabled.isChecked()));
-				app.addParameter("password", password.getEditableText().toString());
-				
-			}
-			else{
-				
-				app.removeParameter("pwd_enabled");
-				app.removeParameter("password");
-				
-			}
-			
-			if(rbLangAll.isChecked()){
-				
-				app.addParameter("EN_Lang", "false");
-				// Set both English and Hindi
-				app.addSyncCategory("English");
-				app.addSyncCategory("Hindi");
-			}
-			else{
-				
-				// Only English Language
-				app.addParameter("EN_Lang", String.valueOf(rbLangEn.isChecked()));
 
-				// Add to Sync Parameters
-				app.addSyncCategory("English");
-				app.removeSyncCategory("Hindi");
-				
-			}
-
-			if(showMemes.isChecked()){
-
-				// Show Memes - Save Parameter
-				app.addParameter("Show_Memes", String.valueOf(true));
-
-				// Add to Sync Parameters
-				app.addSyncCategory("Meme");
-
-			}
-			else{
-
-				// Show Memes - Save Parameter
-				app.addParameter("Show_Memes", String.valueOf(false));
-
-				// Add to Sync Parameters
-				app.removeSyncCategory("Meme");
-			}
+			savePasswordSettings();
+			saveLanguageSettings();
+			saveMemeSettings();
 
 		}
-		
+
 		if(code.contentEquals("LangSettings")){
-        	
-			if(rbLangAll.isChecked()){
-				
-				app.addParameter("EN_Lang", "false");
-				app.addSyncCategory("English");
-				app.addSyncCategory("Hindi");
-			}
-			else{
-				
-				// Only English Language
-				app.addParameter("EN_Lang", String.valueOf(rbLangEn.isChecked()));
 
-				// Add to Sync Parameters
-				app.addSyncCategory("English");
-				app.removeSyncCategory("Hindi");
-				
-			}
+			saveLanguageSettings();
+			saveMemeSettings();
         }
-		
+
 		if(code.contentEquals("Password")){
-			
+
 		}
-		
+
 	}
-	
+
+	private void savePasswordSettings() {
+
+		if(pwdEnabled.isChecked()){
+
+			app.addParameter("pwd_enabled", String.valueOf(pwdEnabled.isChecked()));
+			app.addParameter("password", password.getEditableText().toString());
+
+		}
+		else{
+
+			app.removeParameter("pwd_enabled");
+			app.removeParameter("password");
+
+		}
+	}
+
+	private void saveLanguageSettings() {
+
+		if(rbLangAll.isChecked()){
+
+			app.addParameter("EN_Lang", "false");
+			// Set both English and Hindi
+			app.addSyncCategory("English");
+			app.addSyncCategory("Hindi");
+		}
+		else{
+
+			// Only English Language
+			app.addParameter("EN_Lang", String.valueOf(rbLangEn.isChecked()));
+
+			// Add to Sync Parameters
+			app.addSyncCategory("English");
+			app.removeSyncCategory("Hindi");
+
+		}
+	}
+
+	private void saveMemeSettings() {
+
+		if(showMemes.isChecked()){
+
+			// Show Memes - Save Parameter
+			app.addParameter("Show_Memes", String.valueOf(true));
+
+			// Add to Sync Parameters
+			app.addSyncCategory("Meme");
+
+		}
+		else{
+
+			// Show Memes - Save Parameter
+			app.addParameter("Show_Memes", String.valueOf(false));
+
+			// Add to Sync Parameters
+			app.removeSyncCategory("Meme");
+		}
+	}
+
+
 }

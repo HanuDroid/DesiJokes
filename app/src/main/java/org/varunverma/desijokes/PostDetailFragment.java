@@ -3,6 +3,8 @@ package org.varunverma.desijokes;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,17 +13,22 @@ import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageView;
 
 import com.ayansh.hanudroid.Application;
 import com.ayansh.hanudroid.Post;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
+import java.util.List;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class PostDetailFragment extends Fragment{
 
 	private Post post;
 	private WebView wv;
+	private ImageView iv;
 	private Callbacks activity = sDummyCallbacks;
 	private Application app;
 	
@@ -72,8 +79,10 @@ public class PostDetailFragment extends Fragment{
 		View rootView = inflater.inflate(R.layout.post_detail, container, false);
 		
 		wv = (WebView) rootView.findViewById(R.id.webview);
+		iv = (ImageView) rootView.findViewById(R.id.image_view);
 		
 		WebSettings webSettings = wv.getSettings();
+		webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 		webSettings.setJavaScriptEnabled(true);
 		wv.setBackgroundColor(Color.TRANSPARENT);
 		wv.addJavascriptInterface(new PostJavaScriptInterface(), "Main");
@@ -100,13 +109,26 @@ public class PostDetailFragment extends Fragment{
     }
 
 	private void showPost() {
-		
-		String html = "";
-		if(post != null){
-			html = getHTMLCode(post);
+
+		boolean isMeme = post.hasCategory("Meme");
+		if(isMeme){
+
+			File image_folder = new File(app.getFilesDirectory(),String.valueOf(post.getId()));
+			File[] file_list = image_folder.listFiles();
+			File image_file = file_list[0];
+			Uri image_uri = Uri.fromFile(image_file);
+			wv.setVisibility(View.GONE);
+			iv.setImageURI(image_uri);
 		}
-		wv.loadDataWithBaseURL("fake://not/needed", html, "text/html", "UTF-8", "");
-		
+		else{
+			iv.setVisibility(View.GONE);
+			String html = "";
+			if(post != null){
+				html = getHTMLCode(post);
+			}
+			wv.loadDataWithBaseURL("fake://not/needed", html, "text/html", "UTF-8", "");
+		}
+
 	}
 	
 	private String getHTMLCode(Post post) {
@@ -117,6 +139,9 @@ public class PostDetailFragment extends Fragment{
 
 				// HTML Head
 				"<head>" +
+
+				// Meta
+				"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
 
 				// Java Script
 				"<script type=\"text/javascript\">function loadPosts(taxonomy,name)" +

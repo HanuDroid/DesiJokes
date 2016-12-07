@@ -5,9 +5,12 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +32,9 @@ import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.varunverma.desijokes.billingutil.IabHelper;
+
+import java.io.File;
+import java.util.Iterator;
 
 public class Main extends AppCompatActivity implements PostListFragment.Callbacks,
 												PostDetailFragment.Callbacks {
@@ -288,13 +294,33 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
         			id = viewPager.getCurrentItem();
         		}
     			Post post = app.getPostList().get(id);
-				String post_content = post.getContent(true);
-				post_content += "\n\n via ~ ayansh.com/dj";
-        		Intent send = new Intent(android.content.Intent.ACTION_SEND);
-        		send.setType("text/plain");
-        		send.putExtra(android.content.Intent.EXTRA_SUBJECT, post.getTitle());
-        		send.putExtra(android.content.Intent.EXTRA_TEXT, post_content);
-        		startActivity(Intent.createChooser(send, "Share with..."));
+
+				boolean isMeme = post.hasCategory("Meme");
+				if(isMeme){
+					File image_folder = new File(app.getFilesDirectory(),String.valueOf(post.getId()));
+					File[] file_list = image_folder.listFiles();
+					File image_file = file_list[0];
+
+					Uri uri = FileProvider.getUriForFile(this, getPackageName(), image_file);
+					Intent intent = ShareCompat.IntentBuilder.from(this)
+							.setStream(uri) // uri from FileProvider
+							.setType("text/html")
+							.getIntent()
+							.setAction(Intent.ACTION_SEND) //Change if needed
+							.setDataAndType(uri, "image/*")
+							.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+					startActivity(Intent.createChooser(intent, "Share with..."));
+				}
+				else{
+					String post_content = post.getContent(true);
+					post_content += "\n\n via ~ ayansh.com/dj";
+					Intent send = new Intent(android.content.Intent.ACTION_SEND);
+					send.setType("text/plain");
+					send.putExtra(android.content.Intent.EXTRA_SUBJECT, post.getTitle());
+					send.putExtra(android.content.Intent.EXTRA_TEXT, post_content);
+					startActivity(Intent.createChooser(send, "Share with..."));
+				}
 
 				Bundle bundle = new Bundle();
 				bundle.putString(FirebaseAnalytics.Param.ITEM_ID, post.getTitle());
@@ -303,7 +329,7 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 
     		}catch(Exception e){
     			Log.e(Application.TAG, e.getMessage(), e);
-    			finish();
+    			//finish();
     		}
     		break;
     		
