@@ -62,8 +62,8 @@ public class PostDetailFragment extends Fragment{
 		}
 		
 		if(getArguments() != null){
-			if (getArguments().containsKey("PostId")) {
-				int index = getArguments().getInt("PostId");
+			if (getArguments().containsKey("PostIndex")) {
+				int index = getArguments().getInt("PostIndex");
 				if(index >= app.getPostList().size()){
 	        		index = app.getPostList().size() - 1;	// index is 0 based
 	        	}

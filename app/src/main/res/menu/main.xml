@@ -35,12 +35,6 @@
 		app:actionViewClass="android.widget.SearchView" >
     </item>
 
-	<item android:icon="@mipmap/cancel"
-		android:id="@+id/Delete"
-		app:showAsAction="ifRoom"
-		android:title="Delete">
-	</item>
-		
 	<item android:icon="@mipmap/settings"
 		android:id="@+id/Settings"
 		app:showAsAction="ifRoom"

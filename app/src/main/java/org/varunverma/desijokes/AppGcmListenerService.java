@@ -5,16 +5,22 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.util.DateInterval;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 
+import com.ayansh.CommandExecuter.Invoker;
+import com.ayansh.CommandExecuter.ProgressInfo;
 import com.ayansh.CommandExecuter.ResultObject;
 import com.ayansh.hanudroid.Application;
 import com.ayansh.hanudroid.HanuFCMMessagingService;
+import com.ayansh.hanudroid.Post;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class AppGcmListenerService extends HanuFCMMessagingService {
@@ -23,7 +29,8 @@ public class AppGcmListenerService extends HanuFCMMessagingService {
 	public void onMessageReceived(RemoteMessage remoteMessage) {
 
 		// Be Safe. Set Context.
-		Application.getApplicationInstance().setContext(getApplicationContext());
+		Application app = Application.getApplicationInstance();
+		app.setContext(getApplicationContext());
 
 		String message = remoteMessage.getData().get("message");
 
@@ -37,6 +44,11 @@ public class AppGcmListenerService extends HanuFCMMessagingService {
 			if (result.getData().getBoolean("ShowNotification")) {
 				createNotification(result);
 			}
+
+			if(message.contentEquals("PerformSync")){
+				deleteOldPosts();
+			}
+
 		}
 	}
 
@@ -130,4 +142,18 @@ public class AppGcmListenerService extends HanuFCMMessagingService {
 		nm.notify(1, notification);
 
 	}
+
+	private void deleteOldPosts(){
+
+		DeleteOldPostsCommand command = new DeleteOldPostsCommand(new Invoker() {
+			@Override
+			public void NotifyCommandExecuted(ResultObject resultObject) {}
+
+			@Override
+			public void ProgressUpdate(ProgressInfo progressInfo) {}
+		});
+
+		command.execute();
+	}
+
 }

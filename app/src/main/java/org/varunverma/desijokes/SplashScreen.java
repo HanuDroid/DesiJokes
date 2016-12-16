@@ -2,10 +2,15 @@ package org.varunverma.desijokes;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
@@ -25,6 +30,7 @@ import org.varunverma.desijokes.billingutil.Inventory;
 import org.varunverma.desijokes.billingutil.Purchase;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class SplashScreen extends Activity implements Invoker,
@@ -233,9 +239,47 @@ public class SplashScreen extends Activity implements Invoker,
 			}
 		}
 		else{
+
+			// Did we download new jokes?
+			if(!firstUse){
+				boolean show_notification = result.getData().getBoolean("ShowNotification");
+				if(show_notification){
+					showInfoNotification(result);
+				}
+			}
+
 			// Start the app
 			startApp();
 		}
+
+	}
+
+	private void showInfoNotification(ResultObject result) {
+
+		NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		String title = "";
+
+		int postsDownloaded = result.getData().getInt("PostsDownloaded");
+		if (postsDownloaded < 1) {
+			return;
+		} else {
+			title = postsDownloaded + " new joke(s) have been downloaded";
+		}
+
+		Notification notification = new NotificationCompat.Builder(this)
+				.setContentTitle(title)
+				.setContentText(title)
+				.setSmallIcon(R.mipmap.ic_launcher)
+				.build();
+
+		notification.icon = R.mipmap.ic_launcher;
+		notification.tickerText = title;
+		notification.when = System.currentTimeMillis();
+
+		notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		notification.defaults |= Notification.DEFAULT_SOUND;
+
+		nm.notify(4, notification);
 
 	}
 
@@ -275,8 +319,8 @@ public class SplashScreen extends Activity implements Invoker,
 		
 		appStarted = true;
 		
-		// Start the Quiz List
-		Log.i(Application.TAG, "Start Quiz List");
+		// Start the Main apap
+		Log.i(Application.TAG, "Start Main app");
 		Intent start = new Intent(SplashScreen.this, Main.class);
 		SplashScreen.this.startActivity(start);
 		

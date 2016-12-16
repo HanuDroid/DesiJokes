@@ -34,7 +34,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.varunverma.desijokes.billingutil.IabHelper;
 
 import java.io.File;
-import java.util.Iterator;
 
 public class Main extends AppCompatActivity implements PostListFragment.Callbacks,
 												PostDetailFragment.Callbacks {
@@ -266,11 +265,7 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
     		Intent buy = new Intent(Main.this, ActivatePremiumFeatures.class);
     		Main.this.startActivityForResult(buy,900);
     		break;
-    		
-    	case R.id.Delete:
-    		deletePost();
-    		return true;
-    		
+
     	case R.id.Search:
     		onSearchRequested();
             return true;
@@ -348,44 +343,6 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
     	}
     	
     	return true;
-    }
-    
-    private void deletePost(){
-    	
-    	final int postId;
-    	if(dualPane){
-    		postId = fragmentUI.getSelectedItem();
-		}
-		else{
-			postId = viewPager.getCurrentItem();
-		}
-    	
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Are you sure you want to delete? " +
-				"You won't be able to view this joke later.")
-				.setCancelable(true)
-				.setPositiveButton("Yes",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int id) {
-								try{
-									app.deletePost(app.getPostList().get(postId).getId());
-						    		if(dualPane){
-						    			fragmentUI.reloadUI();
-						    		}
-					    		}catch(Exception e){
-					    			Log.e(Application.TAG, e.getMessage(), e);
-					    			finish();
-					    		}
-							}
-						})
-				.setNegativeButton("No", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-		AlertDialog alert = builder.create();
-		alert.show();
-    	
     }
     
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
