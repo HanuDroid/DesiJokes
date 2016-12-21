@@ -52,5 +52,10 @@
 		app:showAsAction="ifRoom"
 		android:title="About">
 	</item>
+
+	<item android:id="@+id/ShowEula"
+		app:showAsAction="never"
+		android:title="Terms / Conditions">
+	</item>
 			
 </menu>

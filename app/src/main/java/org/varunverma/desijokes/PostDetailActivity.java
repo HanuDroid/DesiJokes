@@ -52,7 +52,7 @@ public class PostDetailActivity extends AppCompatActivity implements
 		adView.loadAd(adRequest);
 
 		Intent intent = getIntent();
-		int postId = intent.getIntExtra("PostId", 0);
+		int postIndex = intent.getIntExtra("PostIndex", 0);
 
 		// Create the Fragment.
 		FragmentManager fm = this.getSupportFragmentManager();
@@ -60,7 +60,7 @@ public class PostDetailActivity extends AppCompatActivity implements
 		// Create Post List Fragment
 		Fragment fragment = new PostDetailFragment();
 		Bundle arguments = new Bundle();
-		arguments.putInt("PostId", postId);
+		arguments.putInt("PostIndex", postIndex);
 		fragment.setArguments(arguments);
 
 		fm.beginTransaction().replace(R.id.post_detail, fragment)

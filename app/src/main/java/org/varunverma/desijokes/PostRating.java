@@ -30,10 +30,10 @@ public class PostRating extends Activity implements OnRatingBarChangeListener {
         setContentView(R.layout.rate);
         
         Intent intent = getIntent();
-        int postId = intent.getIntExtra("PostId", 0);
+        int postIndex = intent.getIntExtra("PostIndex", 0);
         
         try{
-        	post = Application.getApplicationInstance().getPostList().get(postId);
+        	post = Application.getApplicationInstance().getPostList().get(postIndex);
         }catch (Exception e){
         	Log.e(Application.TAG, e.getMessage(), e);
         	finish();

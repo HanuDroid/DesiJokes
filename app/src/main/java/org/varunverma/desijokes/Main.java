@@ -41,7 +41,7 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 	private boolean dualPane;
 	private Application app;
 	private HanuFragmentInterface fragmentUI;
-	private int postId;
+	private int postIndex;
 	private PostPagerAdapter pagerAdapter;
 	private ViewPager viewPager;
 	
@@ -57,10 +57,10 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
         boolean pwdEntered = false;
         if(savedInstanceState != null){
         	pwdEntered = savedInstanceState.getBoolean("PwdEntered");
-        	postId = savedInstanceState.getInt("PostId");
+			postIndex = savedInstanceState.getInt("PostIndex");
         }
         else{
-        	postId = 0;
+			postIndex = 0;
         }
         
         if (findViewById(R.id.post_list) != null) {
@@ -123,7 +123,7 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 			// Create Post List Fragment
 			fragment = new PostListFragment();
 			Bundle arguments = new Bundle();
-			arguments.putInt("PostId", postId);
+			arguments.putInt("PostIndex", postIndex);
 			fragment.setArguments(arguments);
 			fm.beginTransaction().replace(R.id.post_list, fragment).commitAllowingStateLoss();
 			
@@ -205,7 +205,7 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 		
 		if (dualPane) {
             Bundle arguments = new Bundle();
-            arguments.putInt("PostId", id);
+            arguments.putInt("PostIndex", id);
             PostDetailFragment fragment = new PostDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -213,6 +213,11 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
                     .commit();
 
         }
+		else{
+			Intent postDetail = new Intent(Main.this, PostDetailActivity.class);
+			postDetail.putExtra("PostIndex", id);
+			Main.this.startActivity(postDetail);
+		}
 	}
 	
 	@Override
@@ -220,10 +225,10 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 		super.onSaveInstanceState(outState);
 	    outState.putBoolean("PwdEntered", true);
 	    if(fragmentUI != null && dualPane){
-			outState.putInt("PostId", fragmentUI.getSelectedItem());
+			outState.putInt("PostIndex", fragmentUI.getSelectedItem());
 		}
 		else if(!dualPane && viewPager != null){
-			outState.putInt("PostId", viewPager.getCurrentItem());
+			outState.putInt("PostIndex", viewPager.getCurrentItem());
 		}
 	}
 	
@@ -257,7 +262,7 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
     			id = viewPager.getCurrentItem();
     		}
     		Intent rate = new Intent(Main.this, PostRating.class);
-    		rate.putExtra("PostId", id);
+    		rate.putExtra("PostIndex", id);
 			Main.this.startActivity(rate);
     		break;
     		
@@ -334,6 +339,13 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 			info.putExtra("Title", "About: ");
 			Main.this.startActivity(info);
     		break;
+
+		case R.id.ShowEula:
+			Intent eula = new Intent(Main.this, DisplayFile.class);
+			eula.putExtra("File", "eula.html");
+			eula.putExtra("Title", "Terms and Conditions: ");
+			Main.this.startActivity(eula);
+			break;
 
     	case R.id.Upload:
     		Intent upload = new Intent(Main.this, CreateNewPost.class);

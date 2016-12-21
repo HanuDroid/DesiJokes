@@ -61,9 +61,7 @@ public class SplashScreen extends Activity implements Invoker,
 		// Accept my Terms
         if (!app.isEULAAccepted()) {
 			
-			Intent eula = new Intent(SplashScreen.this, DisplayFile.class);
-        	eula.putExtra("File", "eula.html");
-			eula.putExtra("Title", "End User License Aggrement: ");
+			Intent eula = new Intent(SplashScreen.this, Eula.class);
 			SplashScreen.this.startActivityForResult(eula, Application.EULA);
 			
 		} else {
