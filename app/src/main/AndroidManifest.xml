@@ -56,6 +56,15 @@
         	<meta-data android:name="android.app.default_searchable"
                    android:value=".Search" />
         </activity>
+
+        <activity
+            android:name=".Eula"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.EULA" />
+            </intent-filter>
+        </activity>
         
         <activity
             android:name=".DisplayFile"
