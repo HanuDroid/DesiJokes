@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-@SuppressLint("SetJavaScriptEnabled")
 public class DisplayFile extends AppCompatActivity {
 	
 	private String html_text;
@@ -35,7 +34,6 @@ public class DisplayFile extends AppCompatActivity {
 	Application app = Application.getApplicationInstance();
 	private boolean show_ad = false;
 	
-	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 		
@@ -52,13 +50,7 @@ public class DisplayFile extends AppCompatActivity {
 		ab.setDisplayHomeAsUpEnabled(true);
         
         my_web_view = (WebView) findViewById(R.id.webview);
-        
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
-        	my_web_view.setBackground(getResources().getDrawable(R.mipmap.background));
-        }
-        else{
-        	my_web_view.setBackgroundDrawable(getResources().getDrawable(R.mipmap.background));
-        }
+		my_web_view.setBackground(getResources().getDrawable(R.mipmap.background));
 
         WebSettings webSettings = my_web_view.getSettings();
 		webSettings.setJavaScriptEnabled(true);
@@ -72,7 +64,7 @@ public class DisplayFile extends AppCompatActivity {
         this.setTitle(title);
         
        	String fileName = getIntent().getStringExtra("File");
-       	
+
        	if(fileName != null){
        		// If File name was provided, show from file name.
        		getHTMLFromFile(fileName);
@@ -90,11 +82,11 @@ public class DisplayFile extends AppCompatActivity {
        				"<p>" + content + "</p>" +
        				"</body></html>";
        	}
-       	
-       	showFromRawSource();
+
+		showFromRawSource();
        	
 	}
-	
+
 	@Override
 	protected void onDestroy(){
 
@@ -151,11 +143,9 @@ public class DisplayFile extends AppCompatActivity {
 
 	private void showInterstitialAd(){
 
-		if (!Constants.isPremiumVersion()) {
-			InterstitialAd iad = MyInterstitialAd.getInterstitialAd(this);
-			if(iad.isLoaded()){
-				iad.show();
-			}
+		InterstitialAd iad = MyInterstitialAd.getInterstitialAd(this);
+		if(iad.isLoaded()){
+			iad.show();
 		}
 	}
 

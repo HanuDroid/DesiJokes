@@ -15,13 +15,17 @@
 
     <string name="gcm_sender_id">870453302025</string>
     
-    <string name="BlogURL">http://hanu-droid.varunverma.org/Applications/DesiJokes</string>
+    <string name="BlogURL">https://hanu-droid.varunverma.org/Applications/DesiJokes</string>
     <string name="GoogleAnalyticsPropertyId" tools:ignore="TypographyDashes">UA-34707924-3</string>
 
     <string name="swipe_help">Swipe to the Right / Left to move to the previous / next joke</string>
     <string name="show_help_again">Don\'t show this again</string>
     <string name="ok_got_it">OK. Got it !</string>
-	
+
+    <string name="show_memes">Subscribe to Memes</string>
+    <string name="show_memes_help">Memes are Jokes with Images.
+        Memes will be deleted automatically after 7 days to optimize storage space</string>
+
     <string name="title_color">blue</string>
     <string name="title_font">arial,helvetica,sans-serif</string>
     <string name="pub_date_color">black</string>
@@ -30,5 +34,9 @@
     <string name="content_font">arial,helvetica,sans-serif</string>
     <string name="taxonomy_color">black</string>
     <string name="taxonomy_font">arial,helvetica,sans-serif</string>
+
+    <string name="washare_help">Share on Whats App</string>
+    <string name="share_help">Share Joke</string>
+    <string name="rate_help">Rate this Joke</string>
     
 </resources>

@@ -3,44 +3,24 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	tools:context=".Main">
 
-	<item android:icon="@mipmap/share"
-		android:id="@+id/Share"
-		app:showAsAction="ifRoom"
-		android:title="Share">
-	</item>
-
-	<item android:icon="@mipmap/upload"
+	<item android:icon="@mipmap/add_content"
 		android:id="@+id/Upload"
 		app:showAsAction="ifRoom"
 		android:title="Upload">
 	</item>
 
-    <item android:icon="@mipmap/rating"
-		android:id="@+id/Rate"
+	<item android:icon="@mipmap/my_apps"
+		android:id="@+id/MyApps"
 		app:showAsAction="ifRoom"
-		android:title="Rate this joke">
+		android:title="Apps">
 	</item>
-	
-    <item android:icon="@mipmap/buy"
-		android:id="@+id/Buy"
-		app:showAsAction="ifRoom"
-		android:title="Upgrade to Premium">
-	</item>
-	
-    <item
-        android:id="@+id/Search"
-        android:title="Search"
-        android:icon="@mipmap/search"
-		app:showAsAction="ifRoom|collapseActionView"
-		app:actionViewClass="android.widget.SearchView" >
-    </item>
 
 	<item android:icon="@mipmap/settings"
 		android:id="@+id/Settings"
 		app:showAsAction="ifRoom"
 		android:title="Settings">
 	</item>
-	
+
 	<item android:icon="@mipmap/help"
 		android:id="@+id/Help"
 		app:showAsAction="ifRoom"

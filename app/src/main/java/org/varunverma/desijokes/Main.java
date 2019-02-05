@@ -1,9 +1,5 @@
 package org.varunverma.desijokes;
 
-import android.app.AlertDialog;
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,16 +18,15 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.SearchView;
 
 import com.ayansh.hanudroid.Application;
 import com.ayansh.hanudroid.HanuFragmentInterface;
 import com.ayansh.hanudroid.Post;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
-
-import org.varunverma.desijokes.billingutil.IabHelper;
 
 import java.io.File;
 
@@ -50,6 +45,8 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
         
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+		MobileAds.initialize(this, "ca-app-pub-4571712644338430~3902578709");
 
 		Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
@@ -77,18 +74,9 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
         // Get Application Instance.
         app = Application.getApplicationInstance();
 		app.setContext(getApplicationContext());
-        
+
 		// Start the Main Activity
-		String pwdEnabled = app.getOptions().get("pwd_enabled");
-		if (pwdEnabled != null && Boolean.parseBoolean(pwdEnabled)
-				&& !pwdEntered) {
-			// Password is enabled !
-			Intent password = new Intent(Main.this, Settings.class);
-			password.putExtra("Code", "Password");
-			Main.this.startActivityForResult(password, 999);
-		} else {
-			startMainScreen();
-		}
+		startMainScreen();
     }
 
 	private void startMainScreen() {
@@ -96,21 +84,22 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 		// Show Swipe Help
 		showSwipeHelp();
 
-		if (!Constants.isPremiumVersion()) {
+		Bundle extras = new Bundle();
+		extras.putString("max_ad_content_rating", "MA");
 
-			AdRequest adRequest = new AdRequest.Builder()
-					.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-					.addTestDevice("9F11CAC92EB404500CAA3F8B0BBA5277").build();
+		AdRequest adRequest = new AdRequest.Builder()
+				.addNetworkExtrasBundle(AdMobAdapter.class, extras)
+				.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+				.addTestDevice("9F11CAC92EB404500CAA3F8B0BBA5277").build();
 
-			AdView adView = (AdView) findViewById(R.id.adView);
+		AdView adView = (AdView) findViewById(R.id.adView);
 
-			// Start loading the ad in the background.
-			adView.loadAd(adRequest);
+		// Start loading the ad in the background.
+		adView.loadAd(adRequest);
 
-			// Request InterstitialAd
-			MyInterstitialAd.getInterstitialAd(this);
-			MyInterstitialAd.requestNewInterstitial();
-		}
+		// Request InterstitialAd
+		MyInterstitialAd.getInterstitialAd(this);
+		MyInterstitialAd.requestNewInterstitial();
 
 		// Load Posts.
 		Application.getApplicationInstance().getAllPosts();
@@ -132,6 +121,9 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 		} else {
 			// Create view Pager
 			viewPager = (ViewPager) findViewById(R.id.post_pager);
+
+			viewPager.setClipToPadding(false);
+			viewPager.setPageMargin(-50);
 
 			pagerAdapter = new PostPagerAdapter(getSupportFragmentManager(),app.getPostList().size());
 			viewPager.setAdapter(pagerAdapter);
@@ -185,19 +177,9 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-		
-        getMenuInflater().inflate(R.menu.main, menu);
-        
-		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchView searchView = (SearchView) menu.findItem(R.id.Search).getActionView();
-		searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-		searchView.setIconifiedByDefault(false);
 
-        if(Constants.isPremiumVersion()){
-        	menu.findItem(R.id.Buy).setVisible(false);
-        }
-        
-        return true;
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
     }
     
 	@Override
@@ -235,13 +217,6 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 	@Override
 	protected void onDestroy(){
 		
-		// Close billing helper
-		try {
-			IabHelper.getInstance().dispose();
-		} catch (Exception e) {
-			Log.w(Application.TAG, e.getMessage(), e);
-		}
-
 		app.close();
 		super.onDestroy();
 	}
@@ -252,86 +227,20 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
     	int id;
     	
     	switch (item.getItemId()){
-    	
-    	case R.id.Rate:
-    		
-    		if(dualPane){
-    			id = fragmentUI.getSelectedItem();
-    		}
-    		else{
-    			id = viewPager.getCurrentItem();
-    		}
-    		Intent rate = new Intent(Main.this, PostRating.class);
-    		rate.putExtra("PostIndex", id);
-			Main.this.startActivity(rate);
-    		break;
-    		
-    	case R.id.Buy:
-    		Intent buy = new Intent(Main.this, ActivatePremiumFeatures.class);
-    		Main.this.startActivityForResult(buy,900);
-    		break;
 
-    	case R.id.Search:
-    		onSearchRequested();
-            return true;
-    		
     	case R.id.Settings:
-    		Intent settings = new Intent(Main.this, Settings.class);
-    		settings.putExtra("Code", "Settings");
+    		Intent settings = new Intent(Main.this, SettingsActivity.class);
 			Main.this.startActivity(settings);
     		break;
     		
     	case R.id.Help:
     		showHelp();
     		break;
-    		
-    	case R.id.Share:
-    		try{
-    			if(dualPane){
-        			id = fragmentUI.getSelectedItem();
-        		}
-        		else{
-        			id = viewPager.getCurrentItem();
-        		}
-    			Post post = app.getPostList().get(id);
 
-				boolean isMeme = post.hasCategory("Meme");
-				if(isMeme){
-					File image_folder = new File(app.getFilesDirectory(),String.valueOf(post.getId()));
-					File[] file_list = image_folder.listFiles();
-					File image_file = file_list[0];
-
-					Uri uri = FileProvider.getUriForFile(this, getPackageName(), image_file);
-					Intent intent = ShareCompat.IntentBuilder.from(this)
-							.setStream(uri) // uri from FileProvider
-							.setType("text/html")
-							.getIntent()
-							.setAction(Intent.ACTION_SEND) //Change if needed
-							.setDataAndType(uri, "image/*")
-							.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-					startActivity(Intent.createChooser(intent, "Share with..."));
-				}
-				else{
-					String post_content = post.getContent(true);
-					post_content += "\n\n via ~ ayansh.com/dj";
-					Intent send = new Intent(android.content.Intent.ACTION_SEND);
-					send.setType("text/plain");
-					send.putExtra(android.content.Intent.EXTRA_SUBJECT, post.getTitle());
-					send.putExtra(android.content.Intent.EXTRA_TEXT, post_content);
-					startActivity(Intent.createChooser(send, "Share with..."));
-				}
-
-				Bundle bundle = new Bundle();
-				bundle.putString(FirebaseAnalytics.Param.ITEM_ID, post.getTitle());
-				bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "joke_share");
-				app.getFirebaseAnalytics().logEvent(FirebaseAnalytics.Event.SHARE, bundle);
-
-    		}catch(Exception e){
-    			Log.e(Application.TAG, e.getMessage(), e);
-    			//finish();
-    		}
-    		break;
+		case R.id.MyApps:
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=Ayansh+TechnoSoft+Pvt.+Ltd"));
+			Main.this.startActivity(browserIntent);
+			break;
     		
     	case R.id.About:
     		Intent info = new Intent(Main.this, DisplayFile.class);
@@ -355,28 +264,6 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
     	}
     	
     	return true;
-    }
-    
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	
-    	switch (requestCode) {
-
-    	case 900:
-    		if(data.getBooleanExtra("RestartApp", false)){
-				finish();
-			}
-    		break;
-    		
-    	case 999:
-    		if(resultCode == RESULT_OK){
-    			startMainScreen();
-    		}
-    		else{
-    			finish();
-    		}
-    		break;
-    		
-    	}
     }
         
 

@@ -3,46 +3,41 @@ package org.varunverma.desijokes;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.TextView;
 
+import com.ayansh.CommandExecuter.Command;
 import com.ayansh.CommandExecuter.CommandExecuter;
 import com.ayansh.CommandExecuter.Invoker;
 import com.ayansh.CommandExecuter.ProgressInfo;
 import com.ayansh.CommandExecuter.ResultObject;
 import com.ayansh.hanudroid.Application;
 import com.ayansh.hanudroid.SaveRegIdCommand;
-
-import org.varunverma.desijokes.billingutil.IabHelper;
-import org.varunverma.desijokes.billingutil.IabHelper.OnIabSetupFinishedListener;
-import org.varunverma.desijokes.billingutil.IabHelper.QueryInventoryFinishedListener;
-import org.varunverma.desijokes.billingutil.IabResult;
-import org.varunverma.desijokes.billingutil.Inventory;
-import org.varunverma.desijokes.billingutil.Purchase;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class SplashScreen extends Activity implements Invoker,
-		OnIabSetupFinishedListener, QueryInventoryFinishedListener {
+public class SplashScreen extends Activity implements Invoker {
 
 	private Application app;
-	private IabHelper billingHelper;
 	private TextView statusView;
 	private boolean appStarted = false;
 	private boolean firstUse = false;
 	private boolean showNewFeatures = false;
-	
+
+	private FirebaseAnalytics mFirebaseAnalytics;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -58,6 +53,9 @@ public class SplashScreen extends Activity implements Invoker,
         // Set the context of the application
         app.setContext(getApplicationContext());
 
+		// Obtain the FirebaseAnalytics instance.
+		mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
 		// Accept my Terms
         if (!app.isEULAAccepted()) {
 			
@@ -69,38 +67,6 @@ public class SplashScreen extends Activity implements Invoker,
 			startMainActivity();
 		}
 		
-	}
-	
-	private void startMainActivity() {
-		
-		// Ask for Language Option
-		if (!app.getOptions().containsKey("EN_Lang")) {
-			
-			askForLanguageOption();
-			
-			return;
-		}
-		
-		// Instantiate billing helper class
-		billingHelper = IabHelper.getInstance(this, Constants.getPublicKey());
-		
-		if(billingHelper.isSetupComplete()){
-			// Set up is already done... so Initialize app.
-			initializeApp();
-		}
-		else{
-			// Set up
-			try{
-				billingHelper.startSetup(this);
-			}
-			catch(Exception e){
-				// Oh Fuck !
-				Log.w(Application.TAG, e.getMessage(), e);
-				billingHelper.dispose();
-				finish();
-			}
-		}
-
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -127,26 +93,11 @@ public class SplashScreen extends Activity implements Invoker,
 			showNewFeatures = false;		
 			startApp();
 			break;
-			
-		case 998:
-    		if(resultCode == RESULT_OK){
-    			startMainActivity();
-    		}
-    		else{
-    			finish();
-    		}
-    		break;
 		}
 	}
 	
-	private void askForLanguageOption(){
-		
-		Intent lang = new Intent(SplashScreen.this, Settings.class);
-		lang.putExtra("Code", "LangSettings");
-		SplashScreen.this.startActivityForResult(lang, 998);
-	}
-	
-	private void initializeApp(){
+
+	private void startMainActivity(){
 
 		// Register application.
 		String regStatus = (String) app.getOptions().get("RegistrationStatus");
@@ -157,15 +108,7 @@ public class SplashScreen extends Activity implements Invoker,
 			if (regStatus == null || regStatus.contentEquals("")) {
 
 				CommandExecuter ce = new CommandExecuter();
-
-				SaveRegIdCommand command = new SaveRegIdCommand(new Invoker() {
-					public void NotifyCommandExecuted(ResultObject result) {
-					}
-
-					public void ProgressUpdate(ProgressInfo pi) {
-					}
-				}, regId);
-
+				SaveRegIdCommand command = new SaveRegIdCommand(Command.DUMMY_CALLER, regId);
 				ce.execute(command);
 
 			}
@@ -174,11 +117,17 @@ public class SplashScreen extends Activity implements Invoker,
 		// Initialize app...
 		if (app.isThisFirstUse()) {
 			// This is the first run !
-			
+
+			// Set Default Settings
+			setDefaultSettings();
+
 			firstUse = true;
 			
 			statusView.setText("Initializing app for first use.\nPlease wait, this may take a while");
-			app.initializeAppForFirstUse(this);		
+			app.initializeAppForFirstUse(this);
+
+			// Create Notification Channels
+			createNotificationChannels();
 
 		} else {
 			
@@ -202,9 +151,23 @@ public class SplashScreen extends Activity implements Invoker,
 			if(newAppVersion > oldAppVersion ||	newFrameworkVersion > oldFrameworkVersion){
 				showNewFeatures = true;
 				app.updateVersion();
+
+				// Create Notification Channels
+				createNotificationChannels();
 			}
+
+			// Now start the app.
+			startApp();
 		}
 		
+	}
+
+	private void setDefaultSettings() {
+
+		app.addSyncCategory("English");
+		app.addSyncCategory("Hindi");
+		app.addSyncCategory("Meme");
+
 	}
 
 	@Override
@@ -264,7 +227,7 @@ public class SplashScreen extends Activity implements Invoker,
 			title = postsDownloaded + " new joke(s) have been downloaded";
 		}
 
-		Notification notification = new NotificationCompat.Builder(this)
+		Notification notification = new NotificationCompat.Builder(this, "NEW_CONTENT")
 				.setContentTitle(title)
 				.setContentText(title)
 				.setSmallIcon(R.mipmap.ic_launcher)
@@ -280,7 +243,6 @@ public class SplashScreen extends Activity implements Invoker,
 		nm.notify(4, notification);
 
 	}
-
 
 	private void showHelp() {
 		
@@ -342,88 +304,6 @@ public class SplashScreen extends Activity implements Invoker,
 	}
 
 	@Override
-	public void onIabSetupFinished(IabResult result) {
-		
-		if (!result.isSuccess()) {
-			
-			// Log error ! Now I don't know what to do
-			Log.w(Application.TAG, result.getMessage());
-			
-			Constants.setPremiumVersion(false);
-			
-			// Initialize the app
-			initializeApp();
-			
-			
-		} else {
-			
-			// Check if the user has purchased premium service			
-			// Query for Product Details
-			
-			List<String> productList = new ArrayList<String>();
-			productList.add(Constants.getProductKey());
-			
-			try{
-				billingHelper.queryInventoryAsync(true, productList, this);
-			}
-			catch(Exception e){
-				Log.w(Application.TAG, e.getMessage(), e);
-			}
-			
-		}
-		
-	}
-
-	@Override
-	public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-		
-		if (result.isFailure()) {
-			
-			// Log error ! Now I don't know what to do
-			Log.w(Application.TAG, result.getMessage());
-			
-			Constants.setPremiumVersion(false);
-			
-		} else {
-			
-			String productKey = Constants.getProductKey();
-			
-			Purchase item = inv.getPurchase(productKey);
-			
-			if (item != null) {
-				// Has user purchased this premium service ???
-				Constants.setPremiumVersion(inv.hasPurchase(productKey));
-				
-			}
-			else{
-				Constants.setPremiumVersion(false);
-			}
-			
-			Constants.setProductTitle(inv.getSkuDetails(productKey).getTitle());
-			Constants.setProductDescription(inv.getSkuDetails(productKey).getDescription());
-			Constants.setProductPrice(inv.getSkuDetails(productKey).getPrice());
-		}
-		
-		// Initialize the app
-		initializeApp();
-		
-	}
-
-	@Override
-	protected void onDestroy(){
-		
-		if(Constants.isPremiumVersion()){
-			try{
-				IabHelper.getInstance().dispose();
-			}
-			catch(Exception e){
-				Log.w(Application.TAG, e.getMessage(), e);
-			}
-		}
-		super.onDestroy();
-	}
-
-	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		
 	    if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -432,5 +312,28 @@ public class SplashScreen extends Activity implements Invoker,
 	    }
 
 	    return super.onKeyDown(keyCode, event);
+	}
+
+	private void createNotificationChannels(){
+
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+		// Create the NotificationChannel, but only on API 26+ because
+		// the NotificationChannel class is new and not in the support library
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+			NotificationChannel channel;
+			int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+			channel = new NotificationChannel("NEW_CONTENT", "New or Updated Content", importance);
+			channel.setDescription("Notifications when new or updated content is received");
+			notificationManager.createNotificationChannel(channel);
+
+			channel = new NotificationChannel("INFO_MESSAGE", "Information and Announcements", importance);
+			channel.setDescription("Notification when important information or announcement is published from App Developer");
+			notificationManager.createNotificationChannel(channel);
+
+		}
+
 	}
 }

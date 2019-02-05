@@ -2,36 +2,17 @@
     package="org.varunverma.desijokes">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="com.android.vending.BILLING" />
-	<permission android:name="org.varunverma.desijokes.permission.C2D_MESSAGE" android:protectionLevel="signature" />
-	<uses-permission android:name="org.varunverma.desijokes.permission.C2D_MESSAGE" />
-	<!-- App receives GCM messages. -->
-	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-	<!-- GCM connects to Google Services. -->
-	<uses-permission android:name="android.permission.INTERNET" /> 
-	<!-- Keeps the processor from sleeping when a message is received. -->
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	
+	<uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
         android:theme="@style/AppTheme"
         android:label="@string/app_name" >
-        
-        <provider android:name=".SearchSuggestionProvider"
-            android:exported="true"
-            android:permission="android.permission.INTERNET"
-            android:authorities="org.varunverma.desijokes.SearchSuggestionProvider" />
-        
-        <provider
-            android:authorities="org.varunverma.desijokes"
-            android:name="android.support.v4.content.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
-        </provider>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4571712644338430~3902578709"/>
 
         <activity
             android:name=".SplashScreen"
@@ -52,9 +33,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-            <!-- enable the search dialog to send searches to SearchableActivity -->
-        	<meta-data android:name="android.app.default_searchable"
-                   android:value=".Search" />
         </activity>
 
         <activity
@@ -76,28 +54,16 @@
                 <action android:name="android.intent.action.INFO" />
             </intent-filter>
         </activity>
-        
+
         <activity
-            android:name=".Settings"
+            android:name=".SettingsActivity"
             android:exported="false"
-            android:parentActivityName=".Main"
             android:label="@string/app_name" >
             <intent-filter>
-                <action android:name="android.intent.action.SETTINGS" />
+                <action android:name="android.intent.action.PREFERENCES" />
             </intent-filter>
         </activity>
-        
-        <activity
-            android:name=".ActivatePremiumFeatures"
-            android:exported="false"
-            android:parentActivityName=".Main"
-            android:screenOrientation="portrait"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.PREMIUM_FEATURES" />
-            </intent-filter>
-        </activity>
-        
+
         <activity
             android:name=".PostDetailActivity"
             android:exported="false"
@@ -130,33 +96,22 @@
         		<data android:mimeType="text/*" />
             </intent-filter>
         </activity>
-        
-        <activity android:name=".Search" 
-            android:exported="true"
-            android:permission="android.permission.INTERNET"
-            android:parentActivityName=".Main"
-            android:label="@string/search" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+
+        <provider
+            android:authorities="org.varunverma.desijokes"
+            android:name="android.support.v4.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
 
         <service
             android:name="org.varunverma.desijokes.AppGcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="org.varunverma.desijokes.AppInstanceIDService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 

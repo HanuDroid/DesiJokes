@@ -135,11 +135,9 @@ public class CreateNewPost extends AppCompatActivity implements OnClickListener,
 
 	private void showInterstitialAd(){
 
-		if (!Constants.isPremiumVersion()) {
-			InterstitialAd iad = MyInterstitialAd.getInterstitialAd(this);
-			if(iad.isLoaded()){
-				iad.show();
-			}
+		InterstitialAd iad = MyInterstitialAd.getInterstitialAd(this);
+		if(iad.isLoaded()){
+			iad.show();
 		}
 	}
 	

@@ -2,36 +2,45 @@ package org.varunverma.desijokes;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ShareCompat;
+import android.support.v4.content.FileProvider;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.ayansh.hanudroid.Application;
+import com.ayansh.hanudroid.HanuFragmentInterface;
 import com.ayansh.hanudroid.Post;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
-@SuppressLint("SetJavaScriptEnabled")
-public class PostDetailFragment extends Fragment{
+public class PostDetailFragment extends Fragment implements HanuFragmentInterface, View.OnClickListener{
 
 	private Post post;
-	private WebView wv;
-	private ImageView iv;
 	private Callbacks activity = sDummyCallbacks;
 	private Application app;
-	
+	private int postIndex;
+
 	public interface Callbacks {
 		public void loadPostsByCategory(String taxonomy, String name);
 		public boolean isDualPane();
@@ -63,11 +72,11 @@ public class PostDetailFragment extends Fragment{
 		
 		if(getArguments() != null){
 			if (getArguments().containsKey("PostIndex")) {
-				int index = getArguments().getInt("PostIndex");
-				if(index >= app.getPostList().size()){
-	        		index = app.getPostList().size() - 1;	// index is 0 based
+				postIndex = getArguments().getInt("PostIndex");
+				if(postIndex >= app.getPostList().size()){
+					postIndex = app.getPostList().size() - 1;	// index is 0 based
 	        	}
-        		post = app.getPostList().get(index);
+        		post = app.getPostList().get(postIndex);
 	        }
 		}
 	}
@@ -77,21 +86,104 @@ public class PostDetailFragment extends Fragment{
             Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.post_detail, container, false);
-		
-		wv = (WebView) rootView.findViewById(R.id.webview);
-		iv = (ImageView) rootView.findViewById(R.id.image_view);
-		
-		WebSettings webSettings = wv.getSettings();
-		webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-		webSettings.setJavaScriptEnabled(true);
-		wv.setBackgroundColor(Color.TRANSPARENT);
-		wv.addJavascriptInterface(new PostJavaScriptInterface(), "Main");
-		
-		showPost();
-		
+
+		if(post == null){
+			return rootView;
+		}
+
+		RelativeLayout rLL = rootView.findViewById(R.id.ll);
+		setBackgroundColor(rLL);
+
+		TextView tv_post_title = rootView.findViewById(R.id.post_title);
+		tv_post_title.setText(post.getTitle());
+
+		TextView tv_post_content = rootView.findViewById(R.id.post_content);
+		ImageView imageView = rootView.findViewById(R.id.image_view);
+
+		boolean isMeme = post.hasCategory("Meme");
+		if(isMeme){
+
+
+			try{
+				File image_folder = new File(app.getFilesDirectory(),String.valueOf(post.getId()));
+				File[] file_list = image_folder.listFiles();
+				File image_file = file_list[0];
+				Uri image_uri = Uri.fromFile(image_file);
+
+				tv_post_content.setVisibility(View.GONE);
+				imageView.setVisibility(View.VISIBLE);
+				imageView.setImageURI(image_uri);
+			}
+			catch(Exception e){
+
+				imageView.setVisibility(View.GONE);
+				tv_post_content.setVisibility(View.VISIBLE);
+				tv_post_content.setText("\n\nCould not load image. Please inform developer about this\n\n");
+
+			}
+		}
+		else{
+			imageView.setVisibility(View.GONE);
+			tv_post_content.setVisibility(View.VISIBLE);
+			tv_post_content.setMovementMethod(new ScrollingMovementMethod());
+			tv_post_content.setText(post.getContent(true) + "\n\n");
+		}
+
+		TextView tv_post_meta = rootView.findViewById(R.id.post_meta);
+		tv_post_meta.setText(getMetaText());
+
+		ImageButton waShare = rootView.findViewById(R.id.WAShare);
+		waShare.setOnClickListener(this);
+
+		ImageButton Share = rootView.findViewById(R.id.Share);
+		Share.setOnClickListener(this);
+
+		ImageButton postRate = rootView.findViewById(R.id.Rate);
+		postRate.setOnClickListener(this);
+
 		return rootView;
 	}
-	
+
+	private void setBackgroundColor(RelativeLayout rLL) {
+
+		Random r = new Random();
+		int randomNo = r.nextInt(7);
+
+		switch (randomNo){
+			case 0:
+				rLL.setBackgroundResource(R.color.colorPurple);
+				break;
+
+			case 1:
+				rLL.setBackgroundResource(R.color.colorIndigo);
+				break;
+
+			case 2:
+				rLL.setBackgroundResource(R.color.colorPrimary);
+				break;
+
+			case 3:
+				rLL.setBackgroundResource(R.color.colorLime);
+				break;
+
+			case 4:
+				rLL.setBackgroundResource(R.color.colorAccent);
+				break;
+
+			case 5:
+				rLL.setBackgroundResource(R.color.colorBrown);
+				break;
+
+			case 6:
+				rLL.setBackgroundResource(R.color.colorGray);
+				break;
+
+			default:
+				rLL.setBackgroundResource(R.color.colorPurple);
+				break;
+		}
+	}
+
 	@Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -108,117 +200,103 @@ public class PostDetailFragment extends Fragment{
         activity = sDummyCallbacks;
     }
 
-	private void showPost() {
+	@Override
+	public void onClick(View v) {
 
-		if(post == null){
-			wv.setVisibility(View.GONE);
-			return;
+		switch (v.getId()){
+			case R.id.WAShare:
+				shareContent("WhatsApp");
+				break;
+
+			case R.id.Share:
+				shareContent("Normal");
+				break;
+
+			case R.id.Rate:
+				Intent rate = new Intent(getActivity(), PostRating.class);
+				rate.putExtra("PostIndex", postIndex);
+				startActivity(rate);
+				break;
 		}
+	}
 
-		boolean isMeme = post.hasCategory("Meme");
-		if(isMeme){
+	@Override
+	public void reloadUI() {
+		// Reloading the UI
+		post = app.getPostList().get(0);
+	}
 
-			try{
+	@Override
+	public int getSelectedItem() {
+		return postIndex;
+	}
+
+	private void shareContent(String sharingApp){
+
+		try{
+
+			boolean isMeme = post.hasCategory("Meme");
+			if(isMeme){
 				File image_folder = new File(app.getFilesDirectory(),String.valueOf(post.getId()));
 				File[] file_list = image_folder.listFiles();
 				File image_file = file_list[0];
-				Uri image_uri = Uri.fromFile(image_file);
-				wv.setVisibility(View.GONE);
-				iv.setImageURI(image_uri);
+
+				Uri uri = FileProvider.getUriForFile(getActivity(), getActivity().getPackageName(), image_file);
+				Intent intent = ShareCompat.IntentBuilder.from(getActivity())
+						.setStream(uri) // uri from FileProvider
+						.setType("text/html")
+						.getIntent()
+						.setAction(Intent.ACTION_SEND) //Change if needed
+						.setDataAndType(uri, "image/*")
+						.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+				if(sharingApp.contentEquals("WhatsApp")){
+					intent.setPackage("com.whatsapp");
+				}
+
+				startActivity(Intent.createChooser(intent, "Share with..."));
 			}
-			catch(Exception e){
+			else{
+				String post_content = post.getContent(true);
+				post_content += "\n\n \uD83D\uDC49 ayansh.com/dj \uD83D\uDC48";
+				Intent send = new Intent(Intent.ACTION_SEND);
+				send.setType("text/plain");
+				send.putExtra(Intent.EXTRA_SUBJECT, post.getTitle());
+				send.putExtra(Intent.EXTRA_TEXT, post_content);
 
-				iv.setVisibility(View.GONE);
-				String html = getHTMLCode(post);
-				wv.loadDataWithBaseURL("fake://not/needed", html, "text/html", "UTF-8", "");
+				if(sharingApp.contentEquals("WhatsApp")){
+					send.setPackage("com.whatsapp");
+				}
 
+				startActivity(Intent.createChooser(send, "Share with..."));
 			}
 
-		}
-		else{
+			Bundle bundle = new Bundle();
+			bundle.putString(FirebaseAnalytics.Param.ITEM_ID, post.getTitle());
+			bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "post_share");
+			app.getFirebaseAnalytics().logEvent(FirebaseAnalytics.Event.SHARE, bundle);
 
-			iv.setVisibility(View.GONE);
-			String html = getHTMLCode(post);
-			wv.loadDataWithBaseURL("fake://not/needed", html, "text/html", "UTF-8", "");
+		}catch(Exception e){
+			Log.e(Application.TAG, e.getMessage(), e);
 		}
 
 	}
-	
-	private String getHTMLCode(Post post) {
-		
+
+	private CharSequence getMetaText() {
+
 		SimpleDateFormat df = new SimpleDateFormat();
-		
-		String html = "<HTML>" +
 
-				// HTML Head
-				"<head>" +
-
-				// Meta
-				"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
-
-				// Java Script
-				"<script type=\"text/javascript\">function loadPosts(taxonomy,name)" +
-				"{Main.loadPosts(taxonomy,name);}</script>" +
-
-				// CSS
-				"<style>" + 
-				"h3 {color:blue;font-family:arial,helvetica,sans-serif;}" +
-				"#pub_date {color:black;font-family:verdana,geneva,sans-serif;font-size:14px;}" +
-				"#content {color:black;font-family:arial,helvetica,sans-serif; font-size:18px;}" +
-				".taxonomy {color:black;font-family:arial,helvetica,sans-serif; font-size:14px;}" +
-				"#comments {color:black;font-family:arial,helvetica,sans-serif; font-size:16px;}" +
-				"#ratings {color:black; font-family:verdana,geneva,sans-serif; font-size:14px;}" +
-				"#footer {color:#0000ff; font-family:verdana,geneva,sans-serif; font-size:14px;}"+
-				"</style>" +
-
-				"</head>" +
-
-				// HTML Body
-				"<body>" +
-
-				// Heading
-				"<h3>" + post.getTitle() + "</h3>" +
-
-				// Pub Date
-				"<div id=\"pub_date\">" + df.format(post.getPublishDate()) + "</div>" +
-				"<hr />" +
-
-				// Content
-				"<div id=\"content\">" + post.getContent(false) + "</div>" +
-				"<hr />" +
-				
-				// Author
-				"<div class=\"taxonomy\">" +
-				"by <a href=\"javascript:loadPosts('author','" + post.getAuthor() + "')\">" + post.getAuthor() + "</a>" +
-				"</div>";
+		String metaText = "Published On: " + df.format(post.getPublishDate());
 
 		// Ratings
 		if (post.getMetaData().size() > 0
 				&& !post.getMetaData().get("ratings_users").contentEquals("0")) {
-			// We have some ratings !
-			html = html + "<div id=\"ratings\">" + "<br>Rating: "
-					+ String.format("%.2g%n", Float.valueOf(post.getMetaData().get("ratings_average")))
-					+ " / 5 (by " + post.getMetaData().get("ratings_users") + " users)";
 
-			html = html + "</div>";
+			metaText += "\n" + "Rating: "
+					+ String.format("%.2g", Float.valueOf(post.getMetaData().get("ratings_average")))
+					+ "/5 (by " + post.getMetaData().get("ratings_users") + " users)";
 		}
 
-		// Footer
-		html = html + "<br /><hr />" + "<div id=\"footer\">" 
-				+ "Powered by <a href=\"http://hanu-droid.varunverma.org\">Hanu-Droid framework</a>"
-				+ "</div>" +
-
-				"</body>" +
-				"</html>";
-
-		return html;
-		
-	}
-
-	class PostJavaScriptInterface{
-		@JavascriptInterface
-		public void loadPosts(String t, String n){
-			activity.loadPostsByCategory(t, n);
-		}		
+		return metaText;
 	}
 }
