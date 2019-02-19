@@ -3,11 +3,16 @@ package org.varunverma.desijokes;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,15 +35,13 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
 
-public class Main extends AppCompatActivity implements PostListFragment.Callbacks,
-												PostDetailFragment.Callbacks {
+public class Main extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-	private boolean dualPane;
 	private Application app;
-	private HanuFragmentInterface fragmentUI;
 	private int postIndex;
 	private PostPagerAdapter pagerAdapter;
 	private ViewPager viewPager;
+	private DrawerLayout mDrawerLayout;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,28 +51,23 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 
 		MobileAds.initialize(this, "ca-app-pub-4571712644338430~3902578709");
 
+		mDrawerLayout = findViewById(R.id.drawer_layout);
+
+		NavigationView navigationView = findViewById(R.id.nav_view);
+		navigationView.setNavigationItemSelectedListener(this);
+
 		Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
 		setSupportActionBar(myToolbar);
+		ActionBar actionbar = getSupportActionBar();
+		actionbar.setDisplayHomeAsUpEnabled(true);
+		actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
         
-        boolean pwdEntered = false;
         if(savedInstanceState != null){
-        	pwdEntered = savedInstanceState.getBoolean("PwdEntered");
 			postIndex = savedInstanceState.getInt("PostIndex");
         }
         else{
 			postIndex = 0;
         }
-        
-        if (findViewById(R.id.post_list) != null) {
-            dualPane = true;
-        }
-		else{
-			dualPane = false;
-			FrameLayout postDetail = (FrameLayout) findViewById(R.id.post_detail);
-	        if(postDetail != null){
-	        	postDetail.setVisibility(View.GONE);
-	        }
-		}
 
         // Get Application Instance.
         app = Application.getApplicationInstance();
@@ -104,31 +102,14 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 		// Load Posts.
 		Application.getApplicationInstance().getAllPosts();
 
-		// Create the Fragment.
-		FragmentManager fm = this.getSupportFragmentManager();
-		Fragment fragment;
+		// Create view Pager
+		viewPager = (ViewPager) findViewById(R.id.post_pager);
 
-		if (dualPane) {
-			// Create Post List Fragment
-			fragment = new PostListFragment();
-			Bundle arguments = new Bundle();
-			arguments.putInt("PostIndex", postIndex);
-			fragment.setArguments(arguments);
-			fm.beginTransaction().replace(R.id.post_list, fragment).commitAllowingStateLoss();
-			
-			fragmentUI = (HanuFragmentInterface) fragment;
-			
-		} else {
-			// Create view Pager
-			viewPager = (ViewPager) findViewById(R.id.post_pager);
+		viewPager.setClipToPadding(false);
+		viewPager.setPageMargin(-50);
 
-			viewPager.setClipToPadding(false);
-			viewPager.setPageMargin(-50);
-
-			pagerAdapter = new PostPagerAdapter(getSupportFragmentManager(),app.getPostList().size());
-			viewPager.setAdapter(pagerAdapter);
-		}
-		
+		pagerAdapter = new PostPagerAdapter(getSupportFragmentManager(),app.getPostList().size());
+		viewPager.setAdapter(pagerAdapter);
 	}
 
 	private void showSwipeHelp(){
@@ -167,14 +148,6 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 
 	}
 
-	private void showHelp() {
-		// Show Help
-		Intent help = new Intent(Main.this, DisplayFile.class);
-		help.putExtra("File", "help.html");
-		help.putExtra("Title", "Help: ");
-		Main.this.startActivity(help);
-	}
-
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -182,38 +155,6 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 		return true;
     }
     
-	@Override
-	public void onItemSelected(int id) {
-		
-		if (dualPane) {
-            Bundle arguments = new Bundle();
-            arguments.putInt("PostIndex", id);
-            PostDetailFragment fragment = new PostDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.post_detail, fragment)
-                    .commit();
-
-        }
-		else{
-			Intent postDetail = new Intent(Main.this, PostDetailActivity.class);
-			postDetail.putExtra("PostIndex", id);
-			Main.this.startActivity(postDetail);
-		}
-	}
-	
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-	    outState.putBoolean("PwdEntered", true);
-	    if(fragmentUI != null && dualPane){
-			outState.putInt("PostIndex", fragmentUI.getSelectedItem());
-		}
-		else if(!dualPane && viewPager != null){
-			outState.putInt("PostIndex", viewPager.getCurrentItem());
-		}
-	}
-	
 	@Override
 	protected void onDestroy(){
 		
@@ -223,80 +164,63 @@ public class Main extends AppCompatActivity implements PostListFragment.Callback
 
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-    	
-    	int id;
-    	
-    	switch (item.getItemId()){
 
-    	case R.id.Settings:
-    		Intent settings = new Intent(Main.this, SettingsActivity.class);
-			Main.this.startActivity(settings);
-    		break;
-    		
-    	case R.id.Help:
-    		showHelp();
-    		break;
+		switch (item.getItemId()){
 
-		case R.id.MyApps:
-			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=Ayansh+TechnoSoft+Pvt.+Ltd"));
-			Main.this.startActivity(browserIntent);
-			break;
-    		
-    	case R.id.About:
-    		Intent info = new Intent(Main.this, DisplayFile.class);
-			info.putExtra("File", "about.html");
-			info.putExtra("Title", "About: ");
-			Main.this.startActivity(info);
-    		break;
+			case android.R.id.home:
+				mDrawerLayout.openDrawer(GravityCompat.START);
+				break;
 
-		case R.id.ShowEula:
-			Intent eula = new Intent(Main.this, DisplayFile.class);
-			eula.putExtra("File", "eula.html");
-			eula.putExtra("Title", "Terms and Conditions: ");
-			Main.this.startActivity(eula);
-			break;
+			case R.id.Upload:
+				Intent upload = new Intent(Main.this, CreateNewPost.class);
+				Main.this.startActivity(upload);
+				break;
 
-    	case R.id.Upload:
-    		Intent upload = new Intent(Main.this, CreateNewPost.class);
-			Main.this.startActivity(upload);
-    		break;
-    		
-    	}
-    	
-    	return true;
+		}
+
+		return true;
     }
-        
 
 	@Override
-	public void loadPostsByCategory(String taxonomy, String name) {
-		
-		if(taxonomy.contentEquals("category")){
-			app.getPostsByCategory(name);
-		}
-		else if(taxonomy.contentEquals("post_tag")){
-			app.getPostsByTag(name);
-		}
-		else if(taxonomy.contentEquals("author")){
-			app.getPostsByAuthor(name);
-		}
-		
-		this.runOnUiThread(new Runnable() {
-		    public void run(){
-		    	if(dualPane){
-		    		fragmentUI.reloadUI();
-		    	}
-		    	else{
-		    		pagerAdapter.setNewSize(app.getPostList().size());
-		    		pagerAdapter.notifyDataSetChanged();
-		    		viewPager.setCurrentItem(0);
-		    	}
-		    }
-		});
-	}
-	
-	@Override
-	public boolean isDualPane(){
-		return dualPane;
-	}
+	public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
+		//menuItem.setChecked(true);
+		mDrawerLayout.closeDrawers();
+
+		switch (menuItem.getItemId()){
+
+			case R.id.Help:
+				Intent help = new Intent(Main.this, DisplayFile.class);
+				help.putExtra("File", "help.html");
+				help.putExtra("Title", "Help: ");
+				Main.this.startActivity(help);
+				break;
+
+			case R.id.ShowEula:
+				Intent eula = new Intent(Main.this, DisplayFile.class);
+				eula.putExtra("File", "eula.html");
+				eula.putExtra("Title", "Terms and Conditions: ");
+				Main.this.startActivity(eula);
+				break;
+
+			case R.id.Settings:
+				Intent settings = new Intent(Main.this, SettingsActivity.class);
+				Main.this.startActivity(settings);
+				break;
+
+			case R.id.About:
+				Intent info = new Intent(Main.this, DisplayFile.class);
+				info.putExtra("File", "about.html");
+				info.putExtra("Title", "About: ");
+				Main.this.startActivity(info);
+				break;
+
+			case R.id.MyApps:
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/developer?id=Ayansh+TechnoSoft+Pvt.+Ltd"));
+				startActivity(browserIntent);
+				break;
+		}
+
+		return true;
+	}
 }

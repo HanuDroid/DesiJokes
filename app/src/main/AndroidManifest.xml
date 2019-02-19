@@ -64,15 +64,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".PostDetailActivity"
-            android:exported="false"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.POST_DETAIL" />
-            </intent-filter>
-        </activity>
-        
         <activity android:name=".PostRating"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@android:style/Theme.Dialog"
